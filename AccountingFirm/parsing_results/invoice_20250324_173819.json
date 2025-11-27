@@ -1,0 +1,23 @@
+{
+  "invoice_number": "KC26459569",
+  "seller_tax_id": "80007128",
+  "invoice_period": "民國114年01-02月",
+  "date": "2025/02/01",
+  "time": "16:59",
+  "address": "台中市大業路249號",
+  "buyer": null,
+  "items": [],
+  "total_amount": "330.00",
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.7,
+    "seller_tax_id": 0.9,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "address": 0.7,
+    "total_amount": 0.9500000000000001
+  },
+  "overall_confidence": 0.8428571428571429
+}

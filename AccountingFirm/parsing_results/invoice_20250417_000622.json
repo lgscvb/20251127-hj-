@@ -1,0 +1,21 @@
+{
+  "invoice_number": "JL29404786",
+  "seller_tax_id": null,
+  "invoice_period": "民國114年01-02月",
+  "date": "2025/02/28",
+  "time": "15:50",
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": "130.00",
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.7,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "total_amount": 0.9500000000000001
+  },
+  "overall_confidence": 0.86
+}

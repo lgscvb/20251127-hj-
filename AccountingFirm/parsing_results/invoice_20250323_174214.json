@@ -1,0 +1,18 @@
+{
+  "invoice_number": "KW62701443",
+  "invoice_period": "03-04月",
+  "date": "2025/3/4",
+  "address": "台中市西屯區口路二段8",
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.9,
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "address": 0.7
+  },
+  "overall_confidence": 0.8374999999999999
+}

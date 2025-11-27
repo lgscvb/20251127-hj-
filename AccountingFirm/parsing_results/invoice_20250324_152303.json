@@ -1,0 +1,20 @@
+{
+  "invoice_number": "B2701443",
+  "invoice_period": "民國154年03-04月",
+  "date": "2065/03/07",
+  "time": "20:44",
+  "address": "台中市西私服院乘以二D",
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.7,
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "address": 0.7
+  },
+  "overall_confidence": 0.79
+}

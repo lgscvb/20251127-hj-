@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-03-23T17:50:56.667431",
+  "image_path": "uploads/1742723404_S__92348472.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/1/2",
+    "has_stamp": false,
+    "invoice_number": "HW83907067",
+    "invoice_period": "01-02月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "雲林縣西螺鎮福來路480號",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/1/21",
+    "has_stamp": true,
+    "invoice_number": "HW83907067",
+    "invoice_period": "01-02月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": "",
+    "total_amount": "660"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": "雲林縣西螺鎮福來路480號"
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "date",
+      "original_value": "2025/1/2",
+      "corrected_value": "2025/1/21"
+    },
+    {
+      "field_name": "has_stamp",
+      "original_value": false,
+      "corrected_value": true
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "660"
+    }
+  ]
+}

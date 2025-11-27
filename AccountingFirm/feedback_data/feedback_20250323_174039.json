@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-03-23T17:40:39.104709",
+  "image_path": "uploads/1742722788_S__92520456_0.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/3/4",
+    "has_stamp": false,
+    "invoice_number": "KW65397801",
+    "invoice_period": "03-04月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "台中市南屯區南屯路二段201号1樓",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/3/15",
+    "has_stamp": false,
+    "invoice_number": "KW65397801",
+    "invoice_period": "03-04月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": "",
+    "total_amount": "440"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": "台中市南屯區南屯路二段201号1樓"
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "date",
+      "original_value": "2025/3/4",
+      "corrected_value": "2025/3/15"
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "440"
+    }
+  ]
+}

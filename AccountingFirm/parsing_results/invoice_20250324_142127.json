@@ -1,0 +1,16 @@
+{
+  "invoice_number": null,
+  "invoice_period": null,
+  "date": null,
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": "零稅率",
+  "has_stamp": false,
+  "confidence": {
+    "tax_type": 0.7
+  },
+  "overall_confidence": 0.7
+}

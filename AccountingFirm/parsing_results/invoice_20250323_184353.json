@@ -1,0 +1,27 @@
+{
+  "invoice_number": "KW65397801",
+  "invoice_period": "03-04月",
+  "date": "2025/03/15",
+  "time": "6:19",
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "TH",
+      "quantity": "440",
+      "unit_price": "40",
+      "amount": "449"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "items": 0.6
+  },
+  "overall_confidence": 0.8399999999999999
+}

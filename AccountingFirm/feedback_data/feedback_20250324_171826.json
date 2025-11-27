@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-03-24T17:18:26.719560",
+  "image_path": "uploads/1742807869_LINE_ALBUM___250324_72.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "has_stamp": 0.7,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.9,
+      "tax_type": 0.7
+    },
+    "date": "2023/08/15",
+    "has_stamp": true,
+    "invoice_number": "PY19610579",
+    "invoice_period": "中華民國112年07-08月",
+    "items": [],
+    "overall_confidence": 0.7916666666666666,
+    "seller_tax_id": "83718731",
+    "tax_type": "應稅",
+    "time": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "has_stamp": 0.7,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.9,
+      "tax_type": 0.7
+    },
+    "date": "2023/08/15",
+    "has_stamp": true,
+    "invoice_number": "PY19610579",
+    "invoice_period": "中華民國112年07-08月",
+    "items": [],
+    "overall_confidence": 0.7916666666666666,
+    "seller_tax_id": "83718731",
+    "tax_type": "應稅",
+    "time": "",
+    "total_amount": "8514"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "time",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "8514"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "invoice_number": "HW60373082",
+  "invoice_period": "中華民國114年01-02月",
+  "date": "2025/01/31",
+  "time": "20:48",
+  "address": "台中市西區公益路184號",
+  "buyer": null,
+  "items": [
+    {
+      "name": "台中市西區公益路184號",
+      "quantity": "",
+      "unit_price": "0423271265",
+      "amount": "114"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.9,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "address": 0.7,
+    "items": 0.6
+  },
+  "overall_confidence": 0.8083333333333332
+}

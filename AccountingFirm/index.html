@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>發票辨識系統</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { display: flex; gap: 20px; }
+        .upload-area { flex: 1; border: 2px dashed #ccc; padding: 20px; text-align: center; }
+        .result-area { flex: 1; }
+        table { width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid #ddd; }
+        th, td { padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>發票辨識系統</h1>
+    
+    <div class="container">
+        <div class="upload-area" id="drop-area">
+            <p>拖放發票圖片到此處，或</p>
+            <input type="file" id="fileInput" accept="image/*">
+            <button id="uploadBtn">上傳並辨識</button>
+            <div id="preview"></div>
+        </div>
+        
+        <div class="result-area">
+            <h2>辨識結果</h2>
+            <div id="loading" style="display: none;">處理中...</div>
+            <table id="resultTable" style="display: none;">
+                <tr><th>欄位</th><th>值</th></tr>
+                <tr><td>發票號碼</td><td id="invoice-number"></td></tr>
+                <tr><td>發票期別</td><td id="invoice-period"></td></tr>
+                <tr><td>日期</td><td id="date"></td></tr>
+                <tr><td>地址</td><td id="address"></td></tr>
+                <tr><td>買受人</td><td id="buyer"></td></tr>
+                <tr><td>總金額</td><td id="total-amount"></td></tr>
+                <tr><td>課稅別</td><td id="tax-type"></td></tr>
+            </table>
+            
+            <div id="items-container" style="display: none;">
+                <h3>品項明細</h3>
+                <table id="itemsTable">
+                    <tr>
+                        <th>品項</th>
+                        <th>數量</th>
+                        <th>單價</th>
+                        <th>金額</th>
+                    </tr>
+                </table>
+            </div>
+            
+            <div id="raw-text" style="margin-top: 20px; display: none;">
+                <h3>原始辨識文字</h3>
+                <pre id="ocr-text"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files[0]) {
+                alert('請選擇一個文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultTable').style.display = 'none';
+            document.getElementById('items-container').style.display = 'none';
+            document.getElementById('raw-text').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 填充結果表格
+                    document.getElementById('invoice-number').textContent = data.invoice_data.invoice_number || '未識別';
+                    document.getElementById('invoice-period').textContent = data.invoice_data.invoice_period || '未識別';
+                    document.getElementById('date').textContent = data.invoice_data.date || '未識別';
+                    document.getElementById('address').textContent = data.invoice_data.address || '未識別';
+                    document.getElementById('buyer').textContent = data.invoice_data.buyer || '未識別';
+                    document.getElementById('total-amount').textContent = data.invoice_data.total_amount || '未識別';
+                    document.getElementById('tax-type').textContent = data.invoice_data.tax_type || '未識別';
+                    
+                    // 顯示原始文字
+                    document.getElementById('ocr-text').textContent = data.ocr_text;
+                    
+                    // 顯示結果
+                    document.getElementById('resultTable').style.display = 'table';
+                    document.getElementById('raw-text').style.display = 'block';
+                    
+                    // 如果有品項，顯示品項表格
+                    if (data.invoice_data.items && data.invoice_data.items.length > 0) {
+                        const itemsTable = document.getElementById('itemsTable');
+                        // 清除現有行（保留表頭）
+                        while (itemsTable.rows.length > 1) {
+                            itemsTable.deleteRow(1);
+                        }
+                        
+                        // 添加品項行
+                        data.invoice_data.items.forEach(item => {
+                            const row = itemsTable.insertRow();
+                            row.insertCell(0).textContent = item.name || '';
+                            row.insertCell(1).textContent = item.quantity || '';
+                            row.insertCell(2).textContent = item.unit_price || '';
+                            row.insertCell(3).textContent = item.amount || '';
+                        });
+                        
+                        document.getElementById('items-container').style.display = 'block';
+                    }
+                } else {
+                    alert('處理失敗: ' + (data.error || '未知錯誤'));
+                }
+            } catch (error) {
+                alert('發生錯誤: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        // 添加拖放功能
+        const dropArea = document.getElementById('drop-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                document.getElementById('fileInput').files = files;
+                previewFile(files[0]);
+            }
+        }
+        
+        function previewFile(file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '200px';
+                
+                const preview = document.getElementById('preview');
+                preview.innerHTML = '';
+                preview.appendChild(img);
+            }
+        }
+        
+        // 文件選擇預覽
+        document.getElementById('fileInput').addEventListener('change', function() {
+            if (this.files[0]) {
+                previewFile(this.files[0]);
+            }
+        });
+    </script>
+</body>
+</html> 

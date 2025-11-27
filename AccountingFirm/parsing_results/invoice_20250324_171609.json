@@ -1,0 +1,29 @@
+{
+  "invoice_number": null,
+  "seller_tax_id": "85718731",
+  "invoice_period": null,
+  "date": null,
+  "time": "8.51",
+  "address": "台中市西厚大忠南街55號 78-5/",
+  "buyer": null,
+  "items": [
+    {
+      "name": "編號:",
+      "quantity": "1",
+      "unit_price": "8514",
+      "amount": "8"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": "應稅",
+  "has_stamp": true,
+  "confidence": {
+    "seller_tax_id": 0.9,
+    "time": 0.8,
+    "address": 0.7,
+    "tax_type": 0.7,
+    "items": 0.6,
+    "has_stamp": 0.7
+  },
+  "overall_confidence": 0.7333333333333334
+}

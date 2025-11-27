@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-03-23T17:22:51.009327",
+  "image_path": "uploads/1742721636_S__92520458_0.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/1/2",
+    "has_stamp": false,
+    "invoice_number": "HW82984060",
+    "invoice_period": "01-02月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "雲林縣莿桐鄉莿桐村中正路56號",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.9,
+      "invoice_period": 0.9
+    },
+    "date": "2025/1/2",
+    "has_stamp": false,
+    "invoice_number": "HW82984060",
+    "invoice_period": "01-02月",
+    "items": [],
+    "overall_confidence": 0.8833333333333333,
+    "tax_type": "",
+    "total_amount": "236"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": "雲林縣莿桐鄉莿桐村中正路56號"
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "236"
+    }
+  ]
+}

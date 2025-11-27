@@ -1,0 +1,20 @@
+{
+  "invoice_number": "HW603730",
+  "seller_tax_id": "82458125",
+  "invoice_period": "中華民國114年01-02月",
+  "date": "2025/01/02",
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.7,
+    "seller_tax_id": 0.7,
+    "date": 0.85,
+    "invoice_period": 0.9
+  },
+  "overall_confidence": 0.7875
+}

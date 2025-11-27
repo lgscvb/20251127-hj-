@@ -1,0 +1,27 @@
+{
+  "invoice_number": "HW73914911",
+  "invoice_period": "01-02月",
+  "date": "2025/02/17",
+  "time": "11:35",
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "中正路615號:How",
+      "quantity": "",
+      "unit_price": "08110133330032",
+      "amount": "14"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.9,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "items": 0.6
+  },
+  "overall_confidence": 0.8299999999999998
+}

@@ -1,0 +1,128 @@
+body { 
+    font-family: Arial, sans-serif; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 20px;
+    line-height: 1.6;
+}
+.container { 
+    display: flex; 
+    gap: 20px; 
+    flex-wrap: wrap;
+}
+.upload-area { 
+    flex: 1; 
+    min-width: 300px;
+    border: 2px dashed #ccc; 
+    padding: 20px; 
+    text-align: center;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+.upload-area.highlight {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+.result-area { 
+    flex: 2;
+    min-width: 500px;
+}
+.options-area {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-bottom: 20px;
+}
+table, th, td { 
+    border: 1px solid #ddd; 
+}
+th, td { 
+    padding: 12px; 
+    text-align: left; 
+}
+th {
+    background-color: #f2f2f2;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+button:hover {
+    background-color: #45a049;
+}
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+}
+.tab.active {
+    background-color: #4CAF50;
+    color: white;
+}
+.tab-content {
+    display: none;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-top: none;
+}
+.tab-content.active {
+    display: block;
+}
+.editable {
+    background-color: #fffde7;
+    padding: 3px;
+    border: 1px dashed #ccc;
+    min-height: 20px;
+}
+.editable:focus {
+    outline: none;
+    border: 1px solid #4CAF50;
+}
+.confidence-high {
+    border-left: 5px solid #4CAF50;
+}
+.confidence-medium {
+    border-left: 5px solid #FFC107;
+}
+.confidence-low {
+    border-left: 5px solid #F44336;
+}
+.image-preview {
+    max-width: 100%;
+    max-height: 300px;
+    margin-top: 10px;
+}
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,.3);
+    border-radius: 50%;
+    border-top-color: #4CAF50;
+    animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,18 @@
+{
+  "invoice_number": null,
+  "invoice_period": "01-02月",
+  "date": "2025/02/25",
+  "time": "21:16",
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "time": 0.8
+  },
+  "overall_confidence": 0.85
+}

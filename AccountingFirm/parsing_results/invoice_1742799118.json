@@ -1,0 +1,14 @@
+{
+  "invoice_number": "",
+  "invoice_period": "",
+  "date": "",
+  "time": "",
+  "buyer": "",
+  "address": "",
+  "total_amount": "",
+  "tax_type": "",
+  "has_stamp": false,
+  "items": [],
+  "confidence": {},
+  "overall_confidence": 0
+}

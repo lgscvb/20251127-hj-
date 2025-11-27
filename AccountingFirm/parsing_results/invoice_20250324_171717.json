@@ -1,0 +1,22 @@
+{
+  "invoice_number": "PY19610579",
+  "seller_tax_id": "83718731",
+  "invoice_period": "中華民國112年07-08月",
+  "date": "2023/08/15",
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": "應稅",
+  "has_stamp": true,
+  "confidence": {
+    "invoice_number": 0.7,
+    "seller_tax_id": 0.9,
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "tax_type": 0.7,
+    "has_stamp": 0.7
+  },
+  "overall_confidence": 0.7916666666666666
+}

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>發票辨識系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+</head>
+<body>
+    <h1>發票辨識系統</h1>
+    
+    <div class="container">
+        <div class="upload-area" id="drop-area">
+            <h2>上傳發票</h2>
+            <p>拖放發票圖片到此處，或</p>
+            <input type="file" id="fileInput" accept="image/*">
+            
+            <div class="options-area">
+                <h3>處理選項</h3>
+                <div>
+                    <label for="preprocessing">預處理方法：</label>
+                    <select id="preprocessing">
+                        <option value="basic">基本處理(調整亮度/對比度)</option>
+                        <option value="adaptive">自適應閾值(適合大多數發票)</option>
+                        <option value="otsu">Otsu閾值(適合高對比度)</option>
+                        <option value="deskew">傾斜校正(適合歪斜圖像)</option>
+                        <option value="morphological">形態學處理(調整文字粗細)</option>
+                        <option value="clahe">局部對比度增強(適合不均勻照明)</option>
+                        <option value="denoise">雜訊去除(適合噪點多的圖像)</option>
+                        <option value="text_region">文字區域分割(提取文字區域)</option>
+                        <option value="perspective">透視校正(修正拍攝角度)</option>
+                        <option value="sharpen">自適應銳化(增強文字清晰度)</option>
+                        <option value="all">嘗試所有方法</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="ocr-mode">OCR模式:</label>
+                    <select id="ocr-mode">
+                        <option value="text">基本文字識別</option>
+                        <option value="document">文檔識別（適合結構化發票）</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="uploadBtn">上傳並辨識</button>
+            <div id="preview"></div>
+        </div>
+        
+        <div class="result-area">
+            <div class="tabs">
+                <div class="tab active" data-tab="results">辨識結果</div>
+                <div class="tab" data-tab="raw-text">原始文字</div>
+                <div class="tab" data-tab="analysis">系統分析</div>
+            </div>
+            
+            <div id="loading" style="display: none;">
+                <span class="loading"></span> 處理中，請稍候...
+            </div>
+            
+            <div id="tab-results" class="tab-content active">
+                <h2>發票資訊</h2>
+                <table id="invoice-data">
+                    <tr>
+                        <th>欄位</th>
+                        <th>識別結果</th>
+                        <th>信心度</th>
+                    </tr>
+                    <tr>
+                        <td>發票號碼</td>
+                        <td><div class="editable" id="invoice-number" contenteditable="true"></div></td>
+                        <td id="confidence-invoice-number"></td>
+                    </tr>
+                    <tr>
+                        <td>賣方統一編號</td>
+                        <td><div class="editable" id="seller-tax-id" contenteditable="true"></div></td>
+                        <td id="confidence-seller-tax-id"></td>
+                    </tr>
+                    <tr>
+                        <td>發票期別</td>
+                        <td><div class="editable" id="invoice-period" contenteditable="true"></div></td>
+                        <td id="confidence-invoice-period"></td>
+                    </tr>
+                    <tr>
+                        <td>日期</td>
+                        <td><div class="editable" id="date" contenteditable="true"></div></td>
+                        <td id="confidence-date"></td>
+                    </tr>
+                    <tr>
+                        <td>時間</td>
+                        <td><div class="editable" id="time" contenteditable="true"></div></td>
+                        <td id="confidence-time"></td>
+                    </tr>
+                    <tr>
+                        <td>買受人</td>
+                        <td><div class="editable" id="buyer" contenteditable="true"></div></td>
+                        <td id="confidence-buyer"></td>
+                    </tr>
+                    <tr>
+                        <td>地址</td>
+                        <td><div class="editable" id="address" contenteditable="true"></div></td>
+                        <td id="confidence-address"></td>
+                    </tr>
+                    <tr>
+                        <td>總金額</td>
+                        <td><div class="editable" id="total-amount" contenteditable="true"></div></td>
+                        <td id="confidence-total-amount"></td>
+                    </tr>
+                    <tr>
+                        <td>課稅別</td>
+                        <td><div class="editable" id="tax-type" contenteditable="true"></div></td>
+                        <td id="confidence-tax-type"></td>
+                    </tr>
+                    <tr>
+                        <td>專用章</td>
+                        <td><div class="editable" id="has-stamp" contenteditable="true"></div></td>
+                        <td id="confidence-has-stamp"></td>
+                    </tr>
+                </table>
+                
+                <h3>品項明細</h3>
+                <table id="items-table">
+                    <thead>
+                        <tr>
+                            <th>編號</th>
+                            <th>品名</th>
+                            <th>數量</th>
+                            <th>單價</th>
+                            <th>金額</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <!-- 品項將在這裡動態添加 -->
+                    </tbody>
+                </table>
+                
+                <button id="submitCorrections">提交修正</button>
+                <button id="exportData">匯出資料</button>
+            </div>
+            
+            <div id="tab-raw-text" class="tab-content">
+                <h2>OCR 識別文字</h2>
+                <pre id="ocr-text" style="white-space: pre-wrap; background: #f5f5f5; padding: 15px; border-radius: 5px;"></pre>
+            </div>
+            
+            <div id="tab-analysis" class="tab-content">
+                <h2>系統分析</h2>
+                <div id="analysis-content">
+                    <p>尚無分析數據。請先處理一些發票並提交修正，系統將分析常見錯誤模式。</p>
+                </div>
+                <button id="refreshAnalysis">刷新分析</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 全局變量
+        let originalResult = null;
+        let currentImagePath = null;
+        
+        // 切換標籤頁
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有標籤頁的活動狀態
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // 設置當前標籤頁為活動狀態
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // 拖放功能
+        const dropArea = document.getElementById('drop-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                document.getElementById('fileInput').files = files;
+                previewFile(files[0]);
+            }
+        }
+        
+        function previewFile(file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                img.className = 'image-preview';
+                
+                const preview = document.getElementById('preview');
+                preview.innerHTML = '';
+                preview.appendChild(img);
+            }
+        }
+        
+        // 文件選擇預覽
+        document.getElementById('fileInput').addEventListener('change', function() {
+            if (this.files[0]) {
+                previewFile(this.files[0]);
+            }
+        });
+        
+        // 上傳並辨識
+        document.getElementById('uploadBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files[0]) {
+                alert('請先選擇一個文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('preprocessing', document.getElementById('preprocessing').value);
+            formData.append('ocr_mode', document.getElementById('ocr-mode').value);
+            
+            // 顯示加載中
+            document.getElementById('loading').style.display = 'block';
+            
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 隱藏加載中
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.error) {
+                    alert('錯誤: ' + data.error);
+                    return;
+                }
+                
+                // 保存原始結果和圖像路徑
+                originalResult = data.invoice_data;
+                currentImagePath = data.file_path;
+                
+                // 顯示OCR文字
+                document.getElementById('ocr-text').textContent = data.ocr_text;
+                
+                // 顯示發票數據
+                displayInvoiceData(data.invoice_data);
+                
+                // 切換到結果標籤頁
+                document.querySelector('.tab[data-tab="results"]').click();
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                alert('請求失敗: ' + error);
+            });
+        });
+        
+        // 顯示發票數據
+        function displayInvoiceData(data) {
+            // 基本字段
+            const fields = [
+                {id: 'invoice-number', key: 'invoice_number'},
+                {id: 'invoice-period', key: 'invoice_period'},
+                {id: 'date', key: 'date'},
+                {id: 'time', key: 'time'},
+                {id: 'buyer', key: 'buyer'},
+                {id: 'address', key: 'address'},
+                {id: 'total-amount', key: 'total_amount'},
+                {id: 'tax-type', key: 'tax_type'},
+                {id: 'has-stamp', key: 'has_stamp'},
+                {id: 'seller-tax-id', key: 'seller_tax_id'}
+            ];
+            
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const value = data[field.key];
+                element.textContent = value !== null ? value : '';
+                
+                // 顯示信心度
+                const confidenceElement = document.getElementById('confidence-' + field.id);
+                const confidence = data.confidence[field.key];
+                
+                if (confidence) {
+                    const confidencePercent = Math.round(confidence * 100);
+                    confidenceElement.textContent = confidencePercent + '%';
+                    
+                    // 根據信心度設置顏色
+                    if (confidence >= 0.8) {
+                        element.className = 'editable confidence-high';
+                    } else if (confidence >= 0.6) {
+                        element.className = 'editable confidence-medium';
+                    } else {
+                        element.className = 'editable confidence-low';
+                    }
+                } else {
+                    confidenceElement.textContent = '未知';
+                    element.className = 'editable';
+                }
+            });
+            
+            // 品項明細
+            const itemsBody = document.getElementById('items-body');
+            itemsBody.innerHTML = '';
+            
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.number}</td>
+                        <td contenteditable="true">${item.name}</td>
+                        <td contenteditable="true">${item.quantity}</td>
+                        <td contenteditable="true">${item.unit_price}</td>
+                        <td contenteditable="true">${item.amount}</td>
+                    `;
+                    itemsBody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" style="text-align: center;">未檢測到品項明細</td>';
+                itemsBody.appendChild(row);
+            }
+        }
+        
+        // 提交修正
+        document.getElementById('submitCorrections').addEventListener('click', function() {
+            if (!originalResult || !currentImagePath) {
+                alert('沒有可提交的數據');
+                return;
+            }
+            
+            // 收集修正後的數據
+            const correctedResult = {...originalResult};
+            
+            // 基本字段
+            correctedResult.invoice_number = document.getElementById('invoice-number').textContent;
+            correctedResult.invoice_period = document.getElementById('invoice-period').textContent;
+            correctedResult.date = document.getElementById('date').textContent;
+            correctedResult.time = document.getElementById('time').textContent;
+            correctedResult.buyer = document.getElementById('buyer').textContent;
+            correctedResult.address = document.getElementById('address').textContent;
+            correctedResult.total_amount = document.getElementById('total-amount').textContent;
+            correctedResult.tax_type = document.getElementById('tax-type').textContent;
+            correctedResult.has_stamp = document.getElementById('has-stamp').textContent === 'true';
+            correctedResult.seller_tax_id = document.getElementById('seller-tax-id').textContent;
+            
+            // 品項明細 (暫不處理)
+            
+            // 提交反饋
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    original_result: originalResult,
+                    corrected_result: correctedResult,
+                    image_path: currentImagePath
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('錯誤: ' + data.error);
+                } else {
+                    alert('修正已提交，謝謝您的反饋！');
+                }
+            })
+            .catch(error => {
+                alert('請求失敗: ' + error);
+            });
+        });
+        
+        // 匯出數據
+        document.getElementById('exportData').addEventListener('click', function() {
+            if (!originalResult) {
+                alert('沒有可匯出的數據');
+                return;
+            }
+            
+            // 收集當前顯示的數據
+            const exportData = {
+                invoice_number: document.getElementById('invoice-number').textContent,
+                invoice_period: document.getElementById('invoice-period').textContent,
+                date: document.getElementById('date').textContent,
+                time: document.getElementById('time').textContent,
+                buyer: document.getElementById('buyer').textContent,
+                address: document.getElementById('address').textContent,
+                total_amount: document.getElementById('total-amount').textContent,
+                tax_type: document.getElementById('tax-type').textContent,
+                has_stamp: document.getElementById('has-stamp').textContent === 'true',
+                seller_tax_id: document.getElementById('seller-tax-id').textContent,
+                items: [] // 暫不處理品項
+            };
+            
+            // 創建下載
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "invoice_data.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+        
+        // 刷新分析
+        document.getElementById('refreshAnalysis').addEventListener('click', function() {
+            fetch('/api/analysis')
+            .then(response => response.json())
+            .then(data => {
+                const analysisContent = document.getElementById('analysis-content');
+                
+                if (data.error) {
+                    analysisContent.innerHTML = `<p>錯誤: ${data.error}</p>`;
+                    return;
+                }
+                
+                if (data.message) {
+                    analysisContent.innerHTML = `<p>${data.message}</p>`;
+                    return;
+                }
+                
+                let html = `
+                    <p>分析基於 ${data.total_samples} 個樣本</p>
+                    <h3>錯誤模式分析</h3>
+                    <table>
+                        <tr>
+                            <th>欄位</th>
+                            <th>錯誤率</th>
+                        </tr>
+                `;
+                
+                data.error_patterns.forEach(([field, rate]) => {
+                    html += `
+                        <tr>
+                            <td>${field}</td>
+                            <td>${rate.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `</table><h3>改進建議</h3><ul>`;
+                
+                data.recommendations.forEach(rec => {
+                    html += `<li>${rec}</li>`;
+                });
+                
+                html += `</ul>`;
+                analysisContent.innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('analysis-content').innerHTML = `<p>請求失敗: ${error}</p>`;
+            });
+        });
+    </script>
+</body>
+</html> 

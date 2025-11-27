@@ -1,0 +1,29 @@
+[
+  {
+    "id": "p001",
+    "name": "高级麻将桌",
+    "price": "NT$15,000",
+    "description": "自动洗牌功能，静音设计，带LED灯光效果",
+    "stock": 10,
+    "specifications": "尺寸: 120x120x80cm, 重量: 50kg",
+    "category": "桌游设备"
+  },
+  {
+    "id": "p002",
+    "name": "专业德州扑克筹码套装",
+    "price": "NT$3,500",
+    "description": "包含500个高质量陶瓷筹码，带铝合金手提箱",
+    "stock": 25,
+    "specifications": "筹码重量: 14g/个, 套装重量: 8kg",
+    "category": "桌游配件"
+  },
+  {
+    "id": "p003",
+    "name": "豪华轮盘赌套装",
+    "price": "NT$8,800",
+    "description": "专业级赌场轮盘，配套布局和筹码",
+    "stock": 5,
+    "specifications": "轮盘直径: 50cm, 套装重量: 12kg",
+    "category": "桌游设备"
+  }
+] 

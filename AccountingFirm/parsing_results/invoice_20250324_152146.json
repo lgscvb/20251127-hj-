@@ -1,0 +1,16 @@
+{
+  "invoice_number": "HW83907067",
+  "invoice_period": null,
+  "date": null,
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95
+  },
+  "overall_confidence": 0.95
+}

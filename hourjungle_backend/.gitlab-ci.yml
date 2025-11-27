@@ -1,0 +1,78 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+stages:
+  - test
+  - docker-build
+  - deploy
+
+variables:
+  SAST_EXCLUDED_PATHS: "vendor,node_modules"
+  # 修改为GitLab内置的容器注册表
+  DOCKER_REGISTRY: $CI_REGISTRY
+  IMAGE_NAME: $CI_PROJECT_PATH/hourjungle-backend
+  IMAGE_TAG: ${CI_COMMIT_SHA}
+
+sast:
+  stage: test
+  variables:
+    SAST_IMAGE: registry.gitlab.com/security-products/semgrep:5
+  script:
+    - echo "Running SAST analysis..."
+    - /bin/bash -c "echo 'Custom SAST analysis goes here'"
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+
+docker-build:
+  stage: docker-build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+    - docker push $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null\n" > ~/.ssh/config
+  script:
+    # 首先确保目标目录存在
+    - ssh $SSH_USER@$SSH_HOST "mkdir -p ~/hourjungle/backend"
+    # 传输文件
+    - scp -r ./* $SSH_USER@$SSH_HOST:~/hourjungle/backend/
+    # 然后继续原有的部署流程
+    - |
+      ssh $SSH_USER@$SSH_HOST "
+        cd ~/docker-deployments &&
+        HOST_IP=\$(ip addr show | grep 'inet ' | grep -v '127.0.0.1' | awk '{print \$2}' | cut -d/ -f1 | head -n 1) &&
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY &&
+        docker pull $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG &&
+        docker stop hourjungle-backend || true &&
+        docker rm hourjungle-backend || true &&
+        docker run -d --name hourjungle-backend \
+          -p 8000:8000 \
+          -e DB_CONNECTION=mysql \
+          -e DB_HOST=\$HOST_IP \
+          -e DB_PORT=3306 \
+          -e DB_DATABASE=casino88 \
+          -e DB_USERNAME=root \
+          -e DB_PASSWORD=root \
+          -e APP_NAME=Laravel \
+          -e APP_ENV=production \
+          -e APP_DEBUG=true \
+          -e APP_KEY=base64:BXw7sVPZ8r/G8YuDmRCM1bdIWQdGxXmBI40hfm4qUC0= \
+          -e APP_URL=http://35.236.144.236:8000 \
+          $DOCKER_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main

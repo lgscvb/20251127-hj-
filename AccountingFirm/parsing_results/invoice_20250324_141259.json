@@ -1,0 +1,19 @@
+{
+  "invoice_number": "KV40434523",
+  "invoice_period": null,
+  "date": null,
+  "time": null,
+  "address": "台中市西區土庫里存中街46號1樓",
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": "零稅率",
+  "has_stamp": true,
+  "confidence": {
+    "invoice_number": 0.7,
+    "address": 0.7,
+    "tax_type": 0.7,
+    "has_stamp": 0.7
+  },
+  "overall_confidence": 0.7
+}

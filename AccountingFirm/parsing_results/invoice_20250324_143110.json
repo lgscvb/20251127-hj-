@@ -1,0 +1,32 @@
+{
+  "invoice_number": "KW57447129",
+  "invoice_period": "中華民國114年03-04月",
+  "date": "2025/03/04",
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "#1000001000233",
+      "quantity": "",
+      "unit_price": "0001",
+      "amount": "851"
+    },
+    {
+      "name": "車銷售總額:",
+      "quantity": "",
+      "unit_price": "808",
+      "amount": "85."
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "items": 0.6
+  },
+  "overall_confidence": 0.825
+}

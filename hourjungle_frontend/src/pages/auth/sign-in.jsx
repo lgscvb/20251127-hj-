@@ -1,0 +1,206 @@
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  Input,
+  Checkbox,
+  Button,
+  Typography,
+  Alert,
+} from "@material-tailwind/react";
+import { Link } from "react-router-dom";
+import { login, clearError } from "../../redux/actions";
+import { motion, AnimatePresence } from "framer-motion";
+
+export function SignIn() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    account: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(login(formData));
+      if (!result.error) {
+        setShowSuccessAnimation(true);
+        setTimeout(() => {
+          navigate('/dashboard/dashboard');
+        }, 3000);
+      } else {
+        console.error('登入失敗:', result.message);
+      }
+    } catch (error) {
+      console.error('登入出錯:', error);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {showSuccessAnimation ? (
+        <motion.div
+          initial={{ opacity: 0.5, scale: 1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 3 }}
+          className="fixed inset-0 flex items-center justify-center bg-white z-50"
+        >
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 2 }}
+            className="flex flex-col items-center"
+          >
+            <motion.div
+              animate={{ 
+                scale: [1, 1.1, 1.2]
+              }}
+              transition={{ duration: 2 }}
+              className="mb-4"
+            >
+              <motion.img 
+                src="/img/logo-ct-dark.png"
+                alt="Logo"
+                className="w-60"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2 }}
+              />
+            </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2.5 }}
+              className="text-2xl font-bold text-blue-gray-900"
+            >
+              登入成功
+            </motion.p>
+          </motion.div>
+        </motion.div>
+      ) : (
+        <section className="m-8 flex gap-4 items-center">
+          <div className="w-full lg:w-3/5 mt-24">
+            <div className="text-center">
+              <Typography variant="h2" className="font-bold mb-4"><img className="m-auto" src="/img/hour-jungle-logo-1.png" width={300}></img></Typography>
+              <Typography variant="h2" color="blue-gray" className="font-bold">您好!!!歡迎登入</Typography>
+            </div>
+            {error && (
+              <Alert color="red" onClose={() => dispatch(clearError())}>
+                {error}
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+              <div className="mb-1 flex flex-col gap-6">
+                <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
+                  使用者帳號
+                </Typography>
+                <Input
+                  name="account"
+                  size="lg"
+                  placeholder="請輸入您的帳號"
+                  value={formData.account}
+                  onChange={handleChange}
+                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                />
+                <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
+                  使用者密碼
+                </Typography>
+                <Input
+                  name="password"
+                  type="password"
+                  size="lg"
+                  placeholder="********"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  labelProps={{
+                    className: "before:content-none after:content-none",
+                  }}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                className="mt-6" 
+                fullWidth
+                disabled={loading}
+              >
+                {loading ? "確認登入中..." : "確認登入"}
+              </Button>
+
+              <div className="flex items-center justify-between gap-2 mt-6">
+                <Checkbox
+                  label={
+                    <Typography
+                      variant="small"
+                      color="gray"
+                      className="flex items-center justify-start font-medium"
+                    >
+                      同意使用者條款
+                    </Typography>
+                  }
+                  containerProps={{ className: "-ml-2.5" }}
+                />
+                <Typography variant="small" className="font-medium text-gray-900 hidden">
+                  <a href="#">
+                    忘記密碼
+                  </a>
+                </Typography>
+              </div>
+              <div className="space-y-4 mt-8 hidden">
+                <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
+                  <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clipPath="url(#clip0_1156_824)">
+                      <path d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z" fill="#4285F4" />
+                      <path d="M8.65974 16.0006C10.8174 16.0006 12.637 15.2922 13.9627 14.0693L11.3847 12.0704C10.6675 12.5584 9.7415 12.8347 8.66268 12.8347C6.5756 12.8347 4.80598 11.4266 4.17104 9.53357H1.51074V11.5942C2.86882 14.2956 5.63494 16.0006 8.65974 16.0006Z" fill="#34A853" />
+                      <path d="M4.16852 9.53356C3.83341 8.53999 3.83341 7.46411 4.16852 6.47054V4.40991H1.51116C0.376489 6.67043 0.376489 9.33367 1.51116 11.5942L4.16852 9.53356Z" fill="#FBBC04" />
+                      <path d="M8.65974 3.16644C9.80029 3.1488 10.9026 3.57798 11.7286 4.36578L14.0127 2.08174C12.5664 0.72367 10.6469 -0.0229773 8.65974 0.000539111C5.63494 0.000539111 2.86882 1.70548 1.51074 4.40987L4.1681 6.4705C4.8001 4.57449 6.57266 3.16644 8.65974 3.16644Z" fill="#EA4335" />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_1156_824">
+                        <rect width="16" height="16" fill="white" transform="translate(0.5)" />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                    <span>使用Google登入</span>
+                </Button>
+                <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
+                  <img src="/img/LINE_logo.svg.webp" height={24} width={24} alt="" />
+                  <span>使用Line登入</span>
+                </Button>
+              </div>
+              <Typography variant="paragraph" className="text-center text-blue-gray-500 font-medium mt-4 hidden">
+                還沒有帳號嗎?
+                <Link to="/auth/sign-up" className="text-gray-900 ml-1">立即註冊</Link>
+              </Typography>
+            </form>
+
+          </div>
+          <div className="w-2/5 h-full  hidden lg:block">
+            <img
+              src="/img/IMG_2864-scaled.jpg"
+              className="h-full w-full object-cover rounded-3xl"
+            />
+          </div>
+
+        </section>
+      )}
+    </AnimatePresence>
+  );
+}
+
+export default SignIn;

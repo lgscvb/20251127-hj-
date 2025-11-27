@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-03-24T17:20:53.763186",
+  "image_path": "uploads/1742808007_LINE_ALBUM___250324_53.jpg",
+  "original_result": {
+    "address": "台中市南屯區公益路二段2號",
+    "buyer": null,
+    "confidence": {
+      "address": 0.7,
+      "date": 0.95,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.7,
+      "time": 0.8,
+      "total_amount": 0.9500000000000001
+    },
+    "date": "2025/03/05",
+    "has_stamp": false,
+    "invoice_number": "LT76372889",
+    "invoice_period": "民國114年03-04月",
+    "items": [
+      {
+        "amount": "61",
+        "name": "金額",
+        "quantity": "1.97",
+        "unit_price": "31.2"
+      }
+    ],
+    "overall_confidence": 0.7875,
+    "seller_tax_id": "77210216",
+    "tax_type": null,
+    "time": "12:55",
+    "total_amount": "61.00"
+  },
+  "corrected_result": {
+    "address": "台中市南屯區公益路二段2號",
+    "buyer": "",
+    "confidence": {
+      "address": 0.7,
+      "date": 0.95,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.7,
+      "time": 0.8,
+      "total_amount": 0.9500000000000001
+    },
+    "date": "2025/03/05",
+    "has_stamp": false,
+    "invoice_number": "LT76372889",
+    "invoice_period": "民國114年03-04月",
+    "items": [
+      {
+        "amount": "61",
+        "name": "金額",
+        "quantity": "1.97",
+        "unit_price": "31.2"
+      }
+    ],
+    "overall_confidence": 0.7875,
+    "seller_tax_id": "77210216",
+    "tax_type": "",
+    "time": "12:55",
+    "total_amount": "61.00"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    }
+  ]
+}

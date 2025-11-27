@@ -1,0 +1,17 @@
+{
+  "invoice_number": "KW57447129",
+  "invoice_period": "03-04月",
+  "date": "2025/3/4",
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.9,
+    "date": 0.85,
+    "invoice_period": 0.9
+  },
+  "overall_confidence": 0.8833333333333333
+}

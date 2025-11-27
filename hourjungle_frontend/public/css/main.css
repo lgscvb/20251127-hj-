@@ -1,0 +1,26 @@
+body{
+    font-family: '微軟正黑體', Arial, Helvetica, sans-serif!important;
+}
+.font-sans {
+    font-family: '微軟正黑體', Roboto, sans-serif;
+}
+.MuiInput-root{
+    font-family: 'Noto Sans TC', sans-serif;
+}
+.contract-container{
+    width: 1000px;
+}
+.min-w-\[200px\] {
+    min-width: 150px;
+}
+
+.ell{
+    width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
+}
+.border-1{
+    border-width: 1px;
+}

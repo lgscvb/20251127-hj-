@@ -1,0 +1,29 @@
+{
+  "invoice_number": "KW65397801",
+  "invoice_period": "中華民國114年03-04月",
+  "date": "2025/03/15",
+  "time": "15:05",
+  "address": "台中市南屯區南屯路二段",
+  "buyer": null,
+  "items": [
+    {
+      "name": "現金",
+      "quantity": "",
+      "unit_price": "440",
+      "amount": "15"
+    }
+  ],
+  "total_amount": "440.00",
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "address": 0.7,
+    "total_amount": 0.6,
+    "items": 0.6
+  },
+  "overall_confidence": 0.7857142857142857
+}

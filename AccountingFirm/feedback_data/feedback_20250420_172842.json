@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-04-20T17:28:41.916472",
+  "image_path": "uploads/1745141309_S__92520455_0.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.95,
+      "invoice_number": 0.95,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.9,
+      "time": 0.8
+    },
+    "date": "2025/03/12",
+    "has_stamp": false,
+    "invoice_number": "KW57447129",
+    "invoice_period": "中華民國114年03-04月",
+    "items": [],
+    "overall_confidence": 0.9,
+    "seller_tax_id": "53515956",
+    "tax_type": null,
+    "time": "29.53",
+    "total_amount": "700",
+    "file_path": "uploads/1745141309_S__92520455_0.jpg"
+  },
+  "corrected_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.95,
+      "invoice_number": 0.95,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.9,
+      "time": 0.8
+    },
+    "date": "2025/03/12",
+    "has_stamp": false,
+    "invoice_number": "KW57447129",
+    "invoice_period": "中華民國114年03-04月",
+    "items": [],
+    "overall_confidence": 0.9,
+    "seller_tax_id": "53515956",
+    "tax_type": null,
+    "time": "29.53",
+    "total_amount": "700",
+    "file_path": "uploads/1745141309_S__92520455_0.jpg"
+  },
+  "fields_corrected": []
+}

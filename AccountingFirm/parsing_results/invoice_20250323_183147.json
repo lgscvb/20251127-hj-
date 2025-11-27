@@ -1,0 +1,27 @@
+{
+  "invoice_number": "HW82984060",
+  "invoice_period": "01-02月",
+  "date": "2025/01/02",
+  "time": "20:15",
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "114/81/38",
+      "quantity": "",
+      "unit_price": "88838869",
+      "amount": "82"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.85,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "items": 0.6
+  },
+  "overall_confidence": 0.82
+}

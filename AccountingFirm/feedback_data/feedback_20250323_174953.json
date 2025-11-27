@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-03-23T17:49:53.218265",
+  "image_path": "uploads/1742723293_S__23027715.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "tax_type": 0.7
+    },
+    "date": null,
+    "has_stamp": false,
+    "invoice_number": null,
+    "invoice_period": null,
+    "items": [],
+    "overall_confidence": 0.7,
+    "tax_type": "零稅率",
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "",
+    "buyer": "",
+    "confidence": {
+      "tax_type": 0.7
+    },
+    "date": "114/3/22",
+    "has_stamp": true,
+    "invoice_number": "KV40434523",
+    "invoice_period": "一一四年三、四月份",
+    "items": [],
+    "overall_confidence": 0.7,
+    "tax_type": "應稅",
+    "total_amount": "1200"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "date",
+      "original_value": null,
+      "corrected_value": "114/3/22"
+    },
+    {
+      "field_name": "has_stamp",
+      "original_value": false,
+      "corrected_value": true
+    },
+    {
+      "field_name": "invoice_number",
+      "original_value": null,
+      "corrected_value": "KV40434523"
+    },
+    {
+      "field_name": "invoice_period",
+      "original_value": null,
+      "corrected_value": "一一四年三、四月份"
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": "零稅率",
+      "corrected_value": "應稅"
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "1200"
+    }
+  ]
+}

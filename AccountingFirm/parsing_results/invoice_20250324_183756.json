@@ -1,0 +1,31 @@
+{
+  "invoice_number": "HW70014011",
+  "seller_tax_id": null,
+  "invoice_period": null,
+  "date": null,
+  "time": null,
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "聰明",
+      "quantity": "08790",
+      "unit_price": "1",
+      "amount": "000007"
+    },
+    {
+      "name": "0000-000",
+      "quantity": "62",
+      "unit_price": "60000",
+      "amount": "000"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.7,
+    "items": 0.6
+  },
+  "overall_confidence": 0.6499999999999999
+}

@@ -1,0 +1,28 @@
+{
+  "invoice_number": "HW83632169",
+  "seller_tax_id": null,
+  "invoice_period": "中華民國114年01-02月",
+  "date": "2025/01/30",
+  "time": "14:32",
+  "address": null,
+  "buyer": null,
+  "items": [
+    {
+      "name": "1個一",
+      "quantity": "89",
+      "unit_price": "100",
+      "amount": "11"
+    }
+  ],
+  "total_amount": null,
+  "tax_type": null,
+  "has_stamp": false,
+  "confidence": {
+    "invoice_number": 0.95,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "items": 0.6
+  },
+  "overall_confidence": 0.8400000000000001
+}

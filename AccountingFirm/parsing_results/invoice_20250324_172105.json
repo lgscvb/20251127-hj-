@@ -1,0 +1,24 @@
+{
+  "invoice_number": "MD42397044",
+  "seller_tax_id": "83772050",
+  "invoice_period": "民國114年03-04月",
+  "date": "2025/03/19",
+  "time": "13:08",
+  "address": null,
+  "buyer": null,
+  "items": [],
+  "total_amount": "109.00",
+  "tax_type": "免稅",
+  "has_stamp": true,
+  "confidence": {
+    "invoice_number": 0.95,
+    "seller_tax_id": 0.9,
+    "date": 0.95,
+    "invoice_period": 0.9,
+    "time": 0.8,
+    "total_amount": 0.9500000000000001,
+    "tax_type": 0.7,
+    "has_stamp": 0.7
+  },
+  "overall_confidence": 0.85625
+}

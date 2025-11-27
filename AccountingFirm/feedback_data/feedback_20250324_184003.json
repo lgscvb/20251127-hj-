@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-03-24T18:40:03.716355",
+  "image_path": "uploads/1742812680_LINE_ALBUM___250324_40.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.9,
+      "time": 0.8
+    },
+    "date": "2025/02/17",
+    "has_stamp": false,
+    "invoice_number": "HW73914911",
+    "invoice_period": "中華民國114年01-02月",
+    "items": [
+      {
+        "amount": "1.2",
+        "name": "HW",
+        "quantity": "",
+        "unit_price": "73914911"
+      },
+      {
+        "amount": "3",
+        "name": "會用:",
+        "quantity": "",
+        "unit_price": "87773"
+      }
+    ],
+    "overall_confidence": 0.7916666666666666,
+    "seller_tax_id": "28154384",
+    "tax_type": null,
+    "time": "11:35",
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "台中市豐原區中正路615號",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.9,
+      "time": 0.8
+    },
+    "date": "2025/02/17",
+    "has_stamp": false,
+    "invoice_number": "HW73914911",
+    "invoice_period": "中華民國114年01-02月",
+    "items": [
+      {
+        "amount": "1.2",
+        "name": "HW",
+        "quantity": "",
+        "unit_price": "73914911"
+      },
+      {
+        "amount": "3",
+        "name": "會用:",
+        "quantity": "",
+        "unit_price": "87773"
+      }
+    ],
+    "overall_confidence": 0.7916666666666666,
+    "seller_tax_id": "28154384",
+    "tax_type": "",
+    "time": "11:35",
+    "total_amount": "2130"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": "台中市豐原區中正路615號"
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "2130"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "timestamp": "2025-03-24T17:19:44.595486",
+  "image_path": "uploads/1742807929_LINE_ALBUM___250324_70.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "has_stamp": 0.7,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.9,
+      "tax_type": 0.7
+    },
+    "date": "2025/03/12",
+    "has_stamp": true,
+    "invoice_number": "KT\n47001703",
+    "invoice_period": "中華民國114年03-04月",
+    "items": [
+      {
+        "amount": "7",
+        "name": "▶並在各該適當欄內打「√」符號。",
+        "quantity": "",
+        "unit_price": "7"
+      }
+    ],
+    "overall_confidence": 0.7642857142857142,
+    "seller_tax_id": "83772052",
+    "tax_type": "應稅",
+    "time": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "has_stamp": 0.7,
+      "invoice_number": 0.7,
+      "invoice_period": 0.9,
+      "items": 0.6,
+      "seller_tax_id": 0.9,
+      "tax_type": 0.7
+    },
+    "date": "2025/03/12",
+    "has_stamp": true,
+    "invoice_number": "KT\n47001703",
+    "invoice_period": "中華民國114年03-04月",
+    "items": [
+      {
+        "amount": "7",
+        "name": "▶並在各該適當欄內打「√」符號。",
+        "quantity": "",
+        "unit_price": "7"
+      }
+    ],
+    "overall_confidence": 0.7642857142857142,
+    "seller_tax_id": "83772052",
+    "tax_type": "應稅",
+    "time": "",
+    "total_amount": "800"
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "time",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": "800"
+    }
+  ]
+}

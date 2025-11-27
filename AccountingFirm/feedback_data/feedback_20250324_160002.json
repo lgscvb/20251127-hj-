@@ -1,0 +1,79 @@
+{
+  "timestamp": "2025-03-24T16:00:02.371221",
+  "image_path": "uploads/1742803160_S__92717084.jpg",
+  "original_result": {
+    "address": null,
+    "buyer": null,
+    "confidence": {
+      "date": 0.85,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.7
+    },
+    "date": "2022/08/02",
+    "has_stamp": false,
+    "invoice_number": null,
+    "invoice_period": "中華民國111年07-08月",
+    "items": [],
+    "overall_confidence": 0.8166666666666668,
+    "seller_tax_id": "06060932",
+    "tax_type": null,
+    "time": null,
+    "total_amount": null
+  },
+  "corrected_result": {
+    "address": "",
+    "buyer": "",
+    "confidence": {
+      "date": 0.85,
+      "invoice_period": 0.9,
+      "seller_tax_id": 0.7
+    },
+    "date": "2022/08/24",
+    "has_stamp": false,
+    "invoice_number": "",
+    "invoice_period": "中華民國111年07-08月",
+    "items": [],
+    "overall_confidence": 0.8166666666666668,
+    "seller_tax_id": "06060932",
+    "tax_type": "",
+    "time": "",
+    "total_amount": ""
+  },
+  "fields_corrected": [
+    {
+      "field_name": "address",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "buyer",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "date",
+      "original_value": "2022/08/02",
+      "corrected_value": "2022/08/24"
+    },
+    {
+      "field_name": "invoice_number",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "tax_type",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "time",
+      "original_value": null,
+      "corrected_value": ""
+    },
+    {
+      "field_name": "total_amount",
+      "original_value": null,
+      "corrected_value": ""
+    }
+  ]
+}
