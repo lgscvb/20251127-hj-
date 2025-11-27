@@ -1,0 +1,25 @@
+# Google Cloud 憑證檔案
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+
+# 敏感憑證目錄
+AccountingFirm/*.json
+
+# 環境變數檔案
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+
+# 依賴套件
+node_modules/
+__pycache__/
+*.pyc
+
+# 系統檔案
+.DS_Store
