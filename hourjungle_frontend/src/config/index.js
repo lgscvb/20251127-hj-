@@ -3,9 +3,12 @@
  * 集中管理所有环境变量和配置
  */
 
-// API基础URL - 动态获取当前主机名
-const API_URL = `${window.location.protocol}//${window.location.hostname}:8000/api`;
-//const API_URL = `${window.location.protocol}//${window.location.hostname}/api`;
+// API基础URL - 自動判斷環境
+// localhost 用 :8000 (本地開發)，其他環境直接用 /api (生產環境)
+const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_URL = isLocalDev
+  ? `${window.location.protocol}//${window.location.hostname}:8000/api`
+  : `${window.location.protocol}//${window.location.hostname}/api`;
 // API相关配置
 const API_CONFIG = {
   baseURL: API_URL,
