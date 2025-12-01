@@ -19,14 +19,28 @@ Jungle Group 是一個 monorepo，包含多個子專案，服務於辦公室租�
 
 ### 已完成
 - [x] 修復 LINE 簽名驗證安全漏洞 (2024-12-01)
+- [x] 確認本地運行環境 (2024-12-01)
 
 ### 待完成
-- [ ] 確認本地運行環境
 - [ ] 準備 GCP VM 部署配置
 - [ ] 設定 Nginx + SSL (等 DNS 通過)
 - [ ] 部署 Laravel 後端
 - [ ] 部署 React 前端
 - [ ] 設定 LINE Webhook
+
+---
+
+## 本地開發測試帳號
+
+| Email | 密碼 | 角色 |
+|-------|------|------|
+| `admin@example.com` | `admin` | 管理員 |
+| `aa1111@example.com` | `aa1111` | 一般使用者 |
+| `demo01@example.com` | `123456` | Demo |
+
+**本地服務網址：**
+- 後端 API：http://localhost:8000
+- 前端 Dashboard：http://localhost:3000
 
 ### 已知問題
 1. **前端 Excel 匯入** - `hourjungle_frontend/src/pages/dashboard/cust.jsx` 有 TODO 未完成
