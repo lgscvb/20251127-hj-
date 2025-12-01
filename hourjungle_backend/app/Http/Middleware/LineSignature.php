@@ -4,58 +4,48 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class LineSignature
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         \Log::info('LineSignature middleware triggered');
-        
-        // 開發環境暫時跳過驗證
-        if (app()->environment('local')) {
-            \Log::info('Local environment - skipping signature check');
-            return $next($request);
+
+        // 檢查 LINE 簽名 header
+        if (!$request->hasHeader('x-line-signature')) {
+            \Log::warning('Missing LINE signature header');
+            return response()->json(['error' => 'Missing signature'], 401);
         }
 
-        try {
-            // 檢查 LINE 簽名
-            if (!$request->hasHeader('x-line-signature')) {
-                \Log::warning('Missing LINE signature header');
-                return $next($request); // 開發時暫時允許沒有簽名
-            }
+        $signature = $request->header('x-line-signature');
+        $body = $request->getContent();
 
-            $signature = $request->header('x-line-signature');
-            $body = $request->getContent();
-            
-            // 使用 config 而不是 env
-            $channelSecret = config('services.line.channel_secret');
-            
-            \Log::info('Signature verification:', [
-                'received_signature' => $signature,
-                'body_length' => strlen($body),
-                'channel_secret_exists' => !empty($channelSecret)
-            ]);
-            
-            $hash = hash_hmac('sha256', $body, $channelSecret, true);
-            $hashSignature = base64_encode($hash);
-            
-            if ($signature !== $hashSignature) {
-                \Log::warning('Invalid signature', [
-                    'received' => $signature,
-                    'calculated' => $hashSignature
-                ]);
-                return $next($request); // 開發時暫時允許無效簽名
-            }
+        // 取得 Channel Secret
+        $channelSecret = config('services.line.channel_secret');
 
-            \Log::info('Signature verified successfully');
-            return $next($request);
-            
-        } catch (\Exception $e) {
-            \Log::error('Error in LineSignature middleware:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return $next($request); // 開發時出錯也繼續
+        if (empty($channelSecret)) {
+            \Log::error('LINE channel secret not configured');
+            return response()->json(['error' => 'Server configuration error'], 500);
         }
+
+        \Log::info('Signature verification:', [
+            'body_length' => strlen($body),
+            'channel_secret_exists' => true
+        ]);
+
+        // 計算並驗證簽名
+        $hash = hash_hmac('sha256', $body, $channelSecret, true);
+        $expectedSignature = base64_encode($hash);
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            \Log::warning('Invalid LINE signature', [
+                'received' => substr($signature, 0, 20) . '...',
+            ]);
+            return response()->json(['error' => 'Invalid signature'], 401);
+        }
+
+        \Log::info('LINE signature verified successfully');
+        return $next($request);
     }
 }
