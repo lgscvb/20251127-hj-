@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Dashboard, Auth, SystemManagement, Bill } from "@/layouts";
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeAuth } from '@/redux/actions';
+import { initializeAuth, fetchBranches } from '@/redux/actions';
 
 function App() {
   const dispatch = useDispatch();
@@ -16,6 +16,13 @@ function App() {
     };
     init();
   }, [dispatch]);
+
+  // 全局初始化 branches（登入後預加載，解決 Race Condition）
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchBranches());
+    }
+  }, [dispatch, token]);
 
   // 等待初始化完成
   if (!isInitialized) {
