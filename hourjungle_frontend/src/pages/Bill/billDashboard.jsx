@@ -114,13 +114,22 @@ export function BillDashboard() {
                 }
             });
 
-            // 計算報稅截止日（假設每雙月15日）
-            const isEvenMonth = (currentMonth + 1) % 2 === 0;
+            // 計算報稅截止日（營業稅：每單月 1, 3, 5, 7, 9, 11 月的15日）
+            const oddMonths = [0, 2, 4, 6, 8, 10]; // 0-indexed: 1月=0, 3月=2, ...
             let taxDeadline;
-            if (isEvenMonth) {
-                taxDeadline = new Date(currentYear, currentMonth, 15);
-            } else {
-                taxDeadline = new Date(currentYear, currentMonth + 1, 15);
+
+            // 找到下一個報稅截止日
+            for (let i = 0; i < oddMonths.length; i++) {
+                const targetMonth = oddMonths[i];
+                const targetDate = new Date(currentYear, targetMonth, 15);
+                if (targetDate > now) {
+                    taxDeadline = targetDate;
+                    break;
+                }
+            }
+            // 如果今年的都過了，取明年1月15日
+            if (!taxDeadline) {
+                taxDeadline = new Date(currentYear + 1, 0, 15);
             }
             const daysUntilTax = Math.ceil((taxDeadline - now) / (1000 * 60 * 60 * 24));
 
