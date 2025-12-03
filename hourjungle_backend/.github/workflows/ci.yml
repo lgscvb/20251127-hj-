@@ -1,0 +1,127 @@
+name: Jungle CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PHP_VERSION: "8.2"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: jungle_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, tokenizer
+          coverage: xdebug
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Create test env file
+        run: |
+          cp .env.example .env || true
+          cat > .env << EOF
+          APP_NAME=Jungle
+          APP_ENV=testing
+          APP_KEY=base64:dGVzdGtleWZvcnRlc3RpbmdwdXJwb3Nlcw==
+          APP_DEBUG=true
+          APP_URL=http://localhost
+
+          DB_CONNECTION=mysql
+          DB_HOST=127.0.0.1
+          DB_PORT=3306
+          DB_DATABASE=jungle_test
+          DB_USERNAME=root
+          DB_PASSWORD=password
+
+          CACHE_DRIVER=array
+          SESSION_DRIVER=array
+          QUEUE_CONNECTION=sync
+          EOF
+
+      - name: Generate application key
+        run: php artisan key:generate --env=testing || true
+
+      - name: Run migrations
+        run: php artisan migrate --force --env=testing || true
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit --testdox
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: phpcs, phpstan
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Check PHP syntax
+        run: |
+          find app -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+
+      - name: Run PHP CodeSniffer
+        run: |
+          phpcs --standard=PSR12 --ignore=*/vendor/* app/ --warning-severity=0 || true
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Security check
+        run: |
+          composer audit || true
