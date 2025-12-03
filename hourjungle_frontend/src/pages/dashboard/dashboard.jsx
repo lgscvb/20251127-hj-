@@ -121,9 +121,7 @@ export function Dashboard() {
             branch_id: !isTopAccount ? user?.branch_id : undefined
         }));
         dispatch(fetchLineBotList());
-        if (isTopAccount) {
-            dispatch(fetchBranches()); // 如果是最高權限帳號，獲取所有分館資料
-        }
+        dispatch(fetchBranches()); // 獲取所有分館資料（用於顯示分館名稱）
     }, [dispatch, isTopAccount, user?.branch_id]);
 
     // 篩選需要提醒的專案（即將到期或已過期）
@@ -136,7 +134,9 @@ export function Dashboard() {
         if (!user) return "未登入";
         // 使用 isTopAccount 來判斷（已在 usePermission 中統一處理型別轉換）
         if (isTopAccount) return "所有分館";
-        return user.branch || "未設定分館";
+        // 根據 branch_id 查找分館名稱
+        const branch = branches.find(b => b.id === user.branch_id);
+        return branch?.name || user.branch || "未知分館";
     };
 
     // 使用 API 返回的圖表數據
@@ -293,13 +293,13 @@ export function Dashboard() {
                     </div>
                 </div>
 
-                {!isTopAccount && user?.branch && (
+                {!isTopAccount && user?.branch_id && (
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
                         {/* 個人資訊卡片 */}
                         <Card className="bg-white shadow-lg">
-                            <CardHeader 
-                                variant="gradient" 
-                                color="green" 
+                            <CardHeader
+                                variant="gradient"
+                                color="green"
                                 className="p-4 flex items-center gap-4"
                             >
                                 <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -320,7 +320,7 @@ export function Dashboard() {
                                                 分館
                                             </Typography>
                                             <Typography variant="h6" color="blue-gray">
-                                                {user.branch}
+                                                {getCurrentBranchName()}
                                             </Typography>
                                         </div>
                                     </div>
