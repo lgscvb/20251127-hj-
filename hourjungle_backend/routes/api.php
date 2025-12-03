@@ -139,3 +139,21 @@ Route::prefix('brain')->middleware(\App\Http\Middleware\BrainApiKeyMiddleware::c
     // 記錄互動
     Route::post('/interactions', [BrainIntegrationController::class, 'recordInteraction']);
 });
+
+// ===== 自動化任務管理 =====
+use App\Http\Controllers\AutomationController;
+
+Route::prefix('automation')->group(function () {
+    // 任務列表
+    Route::get('/tasks', [AutomationController::class, 'index']);
+    // 單一任務
+    Route::get('/tasks/{id}', [AutomationController::class, 'show']);
+    // 手動建立任務
+    Route::post('/tasks', [AutomationController::class, 'store']);
+    // 取消任務
+    Route::post('/tasks/{id}/cancel', [AutomationController::class, 'cancel']);
+    // 掃描並建立提醒任務
+    Route::post('/scan', [AutomationController::class, 'scanAndCreateTasks']);
+    // 統計資訊
+    Route::get('/stats', [AutomationController::class, 'stats']);
+});
