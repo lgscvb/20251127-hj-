@@ -2826,9 +2826,17 @@ class ApiController extends Controller
         $thisYearStart = date('Y-01-01');
         $thisYearEnd = date('Y-12-31');
 
+        // 年度應收：遍歷今年每個月，計算該月的應收款項總和
         $this_year_receivable = 0;
-        foreach ($projects as $project) {
-            $this_year_receivable += $this->calculateYearlyReceivable($project, $thisYearStart, $thisYearEnd);
+        for ($month = 1; $month <= 12; $month++) {
+            $monthStart = sprintf('%s-%02d-01', date('Y'), $month);
+            $monthEnd = date('Y-m-t', strtotime($monthStart));
+
+            foreach ($projects as $project) {
+                if ($this->shouldPayInMonth($project, $monthStart, $monthEnd)) {
+                    $this_year_receivable += ($project->current_payment ?? 0);
+                }
+            }
         }
 
         $this_year_receipt = 0;
@@ -2859,9 +2867,54 @@ class ApiController extends Controller
         // 確保日期格式統一（轉換為字串進行比較）
         $projectStart = $project->start_day ? (is_string($project->start_day) ? $project->start_day : $project->start_day->format('Y-m-d')) : null;
         $projectEnd = $project->end_day ? (is_string($project->end_day) ? $project->end_day : $project->end_day->format('Y-m-d')) : null;
+        $nextPayDay = $project->next_pay_day ? (is_string($project->next_pay_day) ? $project->next_pay_day : $project->next_pay_day->format('Y-m-d')) : null;
 
-        // 如果沒有合約起訖日，返回 false
+        // 如果沒有合約起訖日，但有 next_pay_day，使用 next_pay_day 判斷
         if (!$projectStart || !$projectEnd) {
+            if ($nextPayDay) {
+                // 使用 next_pay_day 和付款週期來推算
+                $periodMonths = match((int)$project->payment_period) {
+                    1 => 1,   // 月繳
+                    2 => 3,   // 季繳
+                    3 => 6,   // 半年繳
+                    4 => 12,  // 年繳
+                    default => 1
+                };
+
+                $targetMonth = date('Y-m', strtotime($startDate));
+                $nextPayMonth = date('Y-m', strtotime($nextPayDay));
+
+                // 如果 next_pay_day 就在目標月份
+                if ($nextPayMonth === $targetMonth) {
+                    return true;
+                }
+
+                // 檢查目標月份是否在付款週期內
+                $nextPayTimestamp = strtotime($nextPayDay);
+                $targetTimestamp = strtotime($startDate);
+
+                // 向前和向後推算付款日期
+                $checkDate = $nextPayTimestamp;
+
+                // 向後推算（未來的付款日）
+                while ($checkDate <= strtotime($endDate) + (365 * 24 * 60 * 60)) {
+                    if (date('Y-m', $checkDate) === $targetMonth) {
+                        return true;
+                    }
+                    $checkDate = strtotime("+{$periodMonths} months", $checkDate);
+                }
+
+                // 向前推算（過去的付款日）
+                $checkDate = strtotime("-{$periodMonths} months", $nextPayTimestamp);
+                while ($checkDate >= strtotime($startDate) - (365 * 24 * 60 * 60)) {
+                    if (date('Y-m', $checkDate) === $targetMonth) {
+                        return true;
+                    }
+                    $checkDate = strtotime("-{$periodMonths} months", $checkDate);
+                }
+
+                return false;
+            }
             return false;
         }
 
