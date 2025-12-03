@@ -134,8 +134,10 @@ export function Dashboard() {
         if (!user) return "未登入";
         // 使用 isTopAccount 來判斷（已在 usePermission 中統一處理型別轉換）
         if (isTopAccount) return "所有分館";
-        // 根據 branch_id 查找分館名稱
-        const branch = branches.find(b => b.id === user.branch_id);
+        // 根據 branch_id 查找分館名稱（使用 Number 確保型別一致）
+        const userBranchId = Number(user.branch_id);
+        const branch = branches.find(b => Number(b.id) === userBranchId);
+        console.log('Debug branch lookup:', { userBranchId, branches: branches.map(b => ({id: b.id, name: b.name})), found: branch?.name });
         return branch?.name || user.branch || "未知分館";
     };
 
@@ -538,12 +540,22 @@ export function Dashboard() {
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {PAYMENT_PLANS.find(t => t.value === parseInt(project.payment_period))?.label || '-'}
+                                                    {(() => {
+                                                        const val = Number(project.payment_period);
+                                                        const found = PAYMENT_PLANS.find(t => t.value === val);
+                                                        console.log('Debug payment_period:', { raw: project.payment_period, parsed: val, found: found?.label });
+                                                        return found?.label || '-';
+                                                    })()}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {CONTRACT_TYPES.find(t => t.value === String(project.contractType))?.label || '-'}
+                                                    {(() => {
+                                                        const val = String(project.contractType || '');
+                                                        const found = CONTRACT_TYPES.find(t => t.value === val);
+                                                        console.log('Debug contractType:', { raw: project.contractType, parsed: val, found: found?.label });
+                                                        return found?.label || '-';
+                                                    })()}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
