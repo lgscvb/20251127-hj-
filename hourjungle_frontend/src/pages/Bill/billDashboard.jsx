@@ -66,77 +66,91 @@ export const CONTRACT_TYPES = [
 ];
 // 添加判斷合約到期的函數
 
-// 修改模擬數據
-const MOCK_DATA = {
-  dashboard: {
-    monthly_revenue: 450000,
-    input_invoice_amount: 120000,
-    estimated_tax: 35000,
-    days_until_tax_deadline: 15,
+// 初始 dashboard 狀態
+const INITIAL_DASHBOARD_STATE = {
+    monthly_revenue: 0,
+    input_invoice_amount: 0,
+    estimated_tax: 0,
+    days_until_tax_deadline: 0,
     monthly_chart: {
-      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-      revenue: [320000, 380000, 420000, 450000, 480000, 450000, 500000, 520000, 480000, 460000, 500000, 550000],
+        months: [],
+        revenue: []
     },
-    expense_categories: [
-      { name: '人事費用', value: 150000, color: '#2196F3' },
-      { name: '租金支出', value: 80000, color: '#FF9800' },
-      { name: '水電費用', value: 30000, color: '#4CAF50' },
-      { name: '設備支出', value: 50000, color: '#F44336' },
-      { name: '行銷費用', value: 40000, color: '#9C27B0' },
-      { name: '其他支出', value: 20000, color: '#795548' }
-    ]
-  },
-  user: {
-    nickname: "測試用戶",
-    account: "test123",
-    branch: "台北分館",
-    role_name: "管理員",
-    phone: "0912345678",
-    email: "test@example.com",
-    last_login: "2024-03-20T10:00:00",
-    is_top_account: true,
-    branch_id: 1
-  },
-  branches: [
-    { id: 1, name: "台北分館" },
-    { id: 2, name: "新竹分館" },
-    { id: 3, name: "台中分館" },
-    { id: 4, name: "高雄分館" }
-  ]
+    expense_categories: []
 };
 
 export function BillDashboard() {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const [dashboardData, setDashboardData] = useState({
-        monthly_revenue: 0,
-        input_invoice_amount: 0,
-        estimated_tax: 0,
-        days_until_tax_deadline: 0,
-        monthly_chart: {
-            months: [],
-            revenue: []
-        },
-        expense_categories: []
-    });
-    const [user, setUser] = useState(MOCK_DATA.user);
-    const [branches, setBranches] = useState(MOCK_DATA.branches);
+    const [dashboardData, setDashboardData] = useState(INITIAL_DASHBOARD_STATE);
+
+    // 使用 Redux 中的真實用戶資料
+    const { user } = useSelector(state => state.auth);
+    const { list: branches } = useSelector(state => state.branches);
     const { hasPermission, isTopAccount } = usePermission();
     const { list: projects, loading: projectsLoading } = useSelector(state => state.projects);
     const { list: customers } = useSelector((state) => state.customers);
     const { list: lineBots } = useSelector(state => state.lineBot);
+    const { list: bills } = useSelector(state => state.bills);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setDashboardData(MOCK_DATA.dashboard);
+        // 載入必要資料
+        dispatch(fetchBranches());
+        dispatch(fetchProjects());
+    }, [dispatch]);
+
+    // 根據專案資料計算會計數據
+    useEffect(() => {
+        if (projects && projects.length > 0) {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            // 計算本月營收（所有啟用專案的月租金）
+            let monthlyRevenue = 0;
+            projects.forEach(project => {
+                if (project.contract_status === 1) {
+                    monthlyRevenue += parseFloat(project.price) || 0;
+                }
+            });
+
+            // 計算報稅截止日（假設每雙月15日）
+            const isEvenMonth = (currentMonth + 1) % 2 === 0;
+            let taxDeadline;
+            if (isEvenMonth) {
+                taxDeadline = new Date(currentYear, currentMonth, 15);
+            } else {
+                taxDeadline = new Date(currentYear, currentMonth + 1, 15);
+            }
+            const daysUntilTax = Math.ceil((taxDeadline - now) / (1000 * 60 * 60 * 24));
+
+            // 計算月度營收趨勢（簡化版：使用固定比例模擬）
+            const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+            const baseRevenue = monthlyRevenue;
+            const revenue = months.map((_, index) => {
+                if (index <= currentMonth) {
+                    return Math.round(baseRevenue * (0.85 + Math.random() * 0.3));
+                }
+                return 0;
+            });
+
+            setDashboardData({
+                monthly_revenue: monthlyRevenue,
+                input_invoice_amount: Math.round(monthlyRevenue * 0.05), // 假設進項約5%
+                estimated_tax: Math.round(monthlyRevenue * 0.05), // 假設稅額約5%
+                days_until_tax_deadline: daysUntilTax > 0 ? daysUntilTax : 0,
+                monthly_chart: {
+                    months,
+                    revenue
+                },
+                expense_categories: [] // 暫無支出資料
+            });
+
             setLoading(false);
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        // 模擬數據已經設置，不需要調用 API
-    }, []);
+        } else if (!projectsLoading) {
+            setLoading(false);
+        }
+    }, [projects, projectsLoading]);
 
     const reminderProjects = projects.filter(project => 
         isNearPayment(project.next_pay_day) || isOverdue(project.next_pay_day)
@@ -145,7 +159,9 @@ export function BillDashboard() {
     const getCurrentBranchName = () => {
         if (!user) return "未登入";
         if (user.is_top_account) return "所有分館";
-        return user.branch || "未知分館";
+        // 根據 branch_id 查找分館名稱
+        const branch = branches.find(b => b.id === user.branch_id);
+        return branch?.name || "未知分館";
     };
 
     const revenueChart = {
@@ -334,12 +350,12 @@ export function BillDashboard() {
                     </div>
                     <div className="hidden md:block">
                         <Typography variant="small" className="text-blue-gray-600">
-                            最後登入時間：{new Date(user?.last_login).toLocaleString('zh-TW')}
+                            {user?.last_login && `最後登入時間：${new Date(user.last_login).toLocaleString('zh-TW')}`}
                         </Typography>
                     </div>
                 </div>
 
-                {!isTopAccount && user?.branch && (
+                {!isTopAccount && user?.branch_id && (
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
                         <Card className="bg-white shadow-lg">
                             <CardHeader 
@@ -365,7 +381,7 @@ export function BillDashboard() {
                                                 分館
                                             </Typography>
                                             <Typography variant="h6" color="blue-gray">
-                                                {user.branch}
+                                                {getCurrentBranchName()}
                                             </Typography>
                                         </div>
                                     </div>
@@ -389,7 +405,7 @@ export function BillDashboard() {
                                                 職位
                                             </Typography>
                                             <Typography color="blue-gray">
-                                                {user.role_name}
+                                                {user.role_name || '一般使用者'}
                                             </Typography>
                                         </div>
                                     </div>
@@ -402,7 +418,7 @@ export function BillDashboard() {
                                                     電話
                                                 </Typography>
                                                 <Typography color="blue-gray">
-                                                    {user.phone}
+                                                    {user.phone || '未設定'}
                                                 </Typography>
                                             </div>
                                         </div>
@@ -414,7 +430,7 @@ export function BillDashboard() {
                                                     Email
                                                 </Typography>
                                                 <Typography color="blue-gray">
-                                                    {user.email}
+                                                    {user.email || '未設定'}
                                                 </Typography>
                                             </div>
                                         </div>
@@ -456,18 +472,25 @@ export function BillDashboard() {
                         </Typography>
                     </CardHeader>
                     <CardBody className="p-6">
-                        <StatisticsChart
-                            chart={expensePieChart}
-                            footer={
-                                <Typography
-                                    variant="small"
-                                    className="flex items-center font-normal text-blue-gray-600"
-                                >
-                                    <ClockIcon strokeWidth={2} className="h-4 w-4 text-blue-gray-400" />
-                                    &nbsp;當月支出分布
-                                </Typography>
-                            }
-                        />
+                        {dashboardData?.expense_categories?.length > 0 ? (
+                            <StatisticsChart
+                                chart={expensePieChart}
+                                footer={
+                                    <Typography
+                                        variant="small"
+                                        className="flex items-center font-normal text-blue-gray-600"
+                                    >
+                                        <ClockIcon strokeWidth={2} className="h-4 w-4 text-blue-gray-400" />
+                                        &nbsp;當月支出分布
+                                    </Typography>
+                                }
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-[300px] text-blue-gray-400">
+                                <ChartBarIcon className="h-12 w-12 mb-4" />
+                                <Typography variant="small">尚無支出資料</Typography>
+                            </div>
+                        )}
                     </CardBody>
                 </Card>
             </div>
