@@ -30,9 +30,9 @@ import {
 
 export function SystemSetting() {
   const dispatch = useDispatch();
-  const { list: branches } = useSelector(state => state.branches);
+  const { list: branches, loading: branchesLoading } = useSelector(state => state.branches);
   const { data: configData, loading: configLoading } = useSelector(state => state.config);
-  const { list: lineBots } = useSelector(state => state.lineBot);
+  const { list: lineBots, loading: lineBotsLoading } = useSelector(state => state.lineBot);
   const user = useSelector(state => state.auth.user) || {};
   
   const [systemSettings, setSystemSettings] = useState({
@@ -428,10 +428,10 @@ export function SystemSetting() {
         </Card>
       )}
 
-      {/* LINE设置卡片 - 按分馆显示 */} 
+      {/* LINE设置卡片 - 按分馆显示 */}
       <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
-        {branches.length === 0 ? (
-          // 如果分馆列表为空，显示加载动画
+        {branchesLoading ? (
+          // 如果正在加載分馆列表，显示加载动画
           <div className="col-span-3 flex justify-center items-center min-h-[200px]">
             <Spinner className="h-12 w-12" />
           </div>
@@ -463,9 +463,9 @@ export function SystemSetting() {
                 </IconButton>
               </CardHeader>
               <CardBody className="flex flex-col gap-6">
-                
-                {lineBots.length === 0 ? (
-                  // 显示加载动画
+
+                {lineBotsLoading ? (
+                  // 正在加載 LINE Bot 資料
                   <div className="flex justify-center items-center min-h-[200px]">
                     <Spinner className="h-12 w-12" />
                   </div>
