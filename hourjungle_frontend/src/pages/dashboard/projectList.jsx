@@ -234,7 +234,7 @@ export function ProjectList() {
     const [itemsPerPage] = useState(10);
 
     // 修改分頁相關邏輯
-    const totalPages = Math.ceil(pagination.total / pagination.per_page);
+    const totalPages = pagination?.total ? Math.ceil(pagination.total / pagination.per_page) : 0;
 
     // 搜尋參數 state
     const [searchParams, setSearchParams] = useState({
@@ -1552,197 +1552,6 @@ export function ProjectList() {
                     <div className="grid grid-cols-2 gap-4">
                         {/* 基本資料 */}
                         <div className="col-span-2">
-                            <Input
-                                label="專案名稱"
-                                value={projectData.projectName}
-                                onChange={(e) => setProjectData({ ...projectData, projectName: e.target.value })}
-                                required
-                            />
-                        </div>
-
-                        {/* 客戶和商務項目 */}
-                        <Select label="選擇客戶" value={projectData.customer_id} onChange={(value) => setProjectData({ ...projectData, customer_id: value })} required>
-                            {customers.map((customer) => (
-                                <Option key={customer.id} value={customer.id.toString()}>
-                                    {customer.company_name || customer.name}
-                                </Option>
-                            ))}
-                        </Select>
-
-                        <Select label="商務項目" value={projectData.business_item_id} onChange={handleBusinessItemChange} required>
-                            {businessItems.map((item) => (
-                                <Option key={item.id} value={item.id.toString()}>
-                                    {item.name}
-                                </Option>
-                            ))}
-                        </Select>
-
-                        {/* 合約相關 */}
-                        <Select label="付款方案" value={projectData.payment_period} onChange={handlePaymentPlanChange}>
-                            {PAYMENT_PLANS.map((plan) => (
-                                <Option key={plan.value} value={plan.value}>
-                                    {plan.label}
-                                </Option>
-                            ))}
-                        </Select>
-
-                        <Select label="合約類型" value={projectData.contractType} onChange={handleContractTypeChange}>
-                            {CONTRACT_TYPES.map((type) => (
-                                <Option key={type.value} value={type.value}>
-                                    {type.label}
-                                </Option>
-                            ))}
-                        </Select>
-
-                        {/* 日期相關 */}
-                        <Input
-                            type="date"
-                            label="起租時間"
-                            value={projectData.start_day}
-                            onChange={handleStartDateChange}
-                            required
-                        />
-
-                        <Input
-                            type="date"
-                            label="簽約日"
-                            value={projectData.signing_day}
-                            onChange={(e) => setProjectData({ ...projectData, signing_day: e.target.value })}
-                        />
-
-                        <Input
-                            type="number"
-                            label="約定繳費日"
-                            value={projectData.pay_day}
-                        // 設為唯讀，由起租日自動設置
-                        />
-
-                        <Input
-                            type="date"
-                            label="下次繳費日"
-                            value={projectData.next_pay_day}
-                        // 設為唯讀，由系統自動計算
-                        />
-
-                        <Input
-                            type="date"
-                            label="合約到期日"
-                            value={projectData.end_day}
-
-                        />
-
-                        {/* 費用相關 */}
-                        <Input
-                            type="number"
-                            label="單期費用"
-                            value={projectData.original_price}
-                        // 設為唯讀，由商務項目自動帶入
-                        />
-
-                        {/* 期數項目 */}
-                        <Input
-                            type="number"
-                            label="期數項目"
-                            value={projectData.totalPeriods}
-                            readOnly
-                        />
-
-                        {/* 當期款項（防呆機制） */}
-                        <div className="flex flex-col gap-2">
-                            <Select
-                                label="當期款項"
-                                value={selectedPriceOption}
-                                onChange={(value) => {
-                                    setSelectedPriceOption(value);
-                                    if (value === 'manual') {
-                                        setIsManualPrice(true);
-                                    } else {
-                                        setIsManualPrice(false);
-                                        setProjectData({
-                                            ...projectData,
-                                            sale_price: parseFloat(value) || 0
-                                        });
-                                    }
-                                }}
-                            >
-                                {PRICE_OPTIONS.map((option) => (
-                                    <Option key={option.value} value={option.value.toString()}>
-                                        {option.label}
-                                    </Option>
-                                ))}
-                            </Select>
-                            {isManualPrice && (
-                                <Input
-                                    type="number"
-                                    label="輸入金額"
-                                    value={projectData.sale_price}
-                                    onChange={(e) => setProjectData({
-                                        ...projectData,
-                                        sale_price: parseFloat(e.target.value) || 0
-                                    })}
-                                />
-                            )}
-                        </div>
-
-                        <Input
-                            type="number"
-                            label="押金"
-                            value={projectData.deposit}
-
-                        />
-
-                        <Input
-                            type="number"
-                            label="違約金"
-                            value={projectData.penaltyFee}
-
-                        />
-
-                        <div className="flex items-center gap-2">
-                            <Input
-                                type="number"
-                                label="滯納金比例 (%)"
-                                value={projectData.lateFee}
-                                onChange={(e) => setProjectData({ ...projectData, lateFee: parseFloat(e.target.value) || 3 })}
-                            />
-                        </div>
-
-                        {/* 備註 */}
-                        <div className="col-span-2">
-                            <Textarea
-                                label="備註"
-                                value={projectData.remark}
-                                onChange={(e) => setProjectData({ ...projectData, remark: e.target.value })}
-                            />
-                        </div>
-
-                        {/* 在適當位置添加狀態切換開關 */}
-                        <div className="col-span-2 flex items-center gap-4">
-                            <Typography color="blue-gray" className="font-medium">
-                                狀態
-                            </Typography>
-                            <Switch
-                                checked={projectData.status === 1}
-                                onChange={(e) => setProjectData({
-                                    ...projectData,
-                                    status: e.target.checked ? 1 : 0
-                                })}
-                                label={projectData.status === 1 ? "啟用" : "停用"}
-                            />
-                        </div>
-
-                        {/* 生成合約書按鈕 */}
-                        <div className="col-span-2 hidden">
-                            <Button
-                                variant="outlined"
-                                color="blue"
-                                onClick={handleGenerateContractPreview}
-                                className="flex items-center gap-2"
-                                disabled={!projectData.customer_id || !projectData.business_item_id}
-                            >
-                                <DocumentTextIcon className="h-4 w-4" />
-                                <span>預覽合約</span>
-                            </Button>
                         </div>
                     </div>
                 </DialogBody>
@@ -1754,10 +1563,10 @@ export function ProjectList() {
                         確認新增
                     </Button>
                 </DialogFooter>
-            </Dialog >
+            </Dialog>
 
             {/* 查看/編輯專案彈窗 */}
-            < Dialog open={detailOpen} handler={handleOpenDetail} size="xl" >
+            <Dialog open={detailOpen} handler={handleOpenDetail} size="xl">
                 <DialogHeader className="flex justify-between items-center">
                     <Typography variant="h6">
                         {viewMode === 'view' ? '查看專案' : '編輯專案'}
@@ -2123,13 +1932,12 @@ export function ProjectList() {
                         </>
                     )}
                 </DialogFooter>
-            </Dialog >
+            </Dialog>
 
             {/* 繳費歷程彈窗 */}
-            < PaymentHistoryModal
+            <PaymentHistoryModal
                 open={paymentHistoryOpen}
-                handleOpen={() => setPaymentHistoryOpen(!paymentHistoryOpen)
-                }
+                handleOpen={() => setPaymentHistoryOpen(!paymentHistoryOpen)}
                 projectId={selectedProjectId}
                 projectData={projects.find(p => p.id === selectedProjectId)}
             />
@@ -2159,7 +1967,7 @@ export function ProjectList() {
                     <span>合約已過期</span>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
 
