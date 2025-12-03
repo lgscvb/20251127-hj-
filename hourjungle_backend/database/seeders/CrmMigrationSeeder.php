@@ -164,8 +164,13 @@ class CrmMigrationSeeder extends Seeder
             // 轉換狀態
             $status = ($data['status'] ?? 'active') === 'active' ? 1 : 0;
 
-            // 取得場館 ID
-            $branchId = $this->branchMapping[$data['location'] ?? 'headquarters'] ?? null;
+            // 取得場館 ID（新格式直接使用數字，舊格式使用 mapping）
+            $branchId = null;
+            if (isset($data['branch_id']) && is_numeric($data['branch_id'])) {
+                $branchId = (int) $data['branch_id'];
+            } elseif (isset($data['location'])) {
+                $branchId = $this->branchMapping[$data['location'] ?? 'headquarters'] ?? null;
+            }
 
             // 處理生日
             $birthday = null;
@@ -199,7 +204,7 @@ class CrmMigrationSeeder extends Seeder
                     'status' => $status,
                     'customer_type' => $customerType,
                     'branch_id' => $branchId,
-                    'branch_name' => $branchId ? ($data['location'] === 'headquarters' ? '台灣大道館' : '環瑞館') : null,
+                    'branch_name' => $branchId ? ($branchId == 1 ? '台灣大道館' : '環瑞館') : null,
                 ]
             );
 
@@ -260,11 +265,17 @@ class CrmMigrationSeeder extends Seeder
             }
 
             // 如果找不到，用名字找
+            $customer = null;
             if (!$customerId && $customerName) {
                 $customer = Customer::where('name', $customerName)->first();
                 if ($customer) {
                     $customerId = $customer->id;
                 }
+            }
+
+            // 找到客戶以取得 branch_id
+            if ($customerId && !$customer) {
+                $customer = Customer::find($customerId);
             }
 
             if (!$customerId) {
@@ -320,7 +331,7 @@ class CrmMigrationSeeder extends Seeder
                 'business_item_id' => $businessItemId,
                 'customer_id' => $customerId,
                 'member_id' => 1, // 預設為系統管理員
-                'branch_id' => $this->getBranchIdFromLegacyId($legacyId),
+                'branch_id' => $customer ? $customer->branch_id : 1, // 從客戶取得 branch_id
                 'start_day' => $startDate,
                 'end_day' => $endDate,
                 'signing_day' => $signedAt ?? $startDate,

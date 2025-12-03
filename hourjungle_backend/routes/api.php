@@ -114,6 +114,12 @@ Route::prefix('bills')->group(function () {
     Route::delete('/{id}', [BillController::class, 'destroy']);
 });
 
+// ===== 資料品質檢查 =====
+use App\Http\Controllers\DataQualityController;
+
+Route::get('/data-quality/warnings', [DataQualityController::class, 'getWarnings']);
+Route::get('/data-quality/summary', [DataQualityController::class, 'getSummary']);
+
 // ===== Brain AI 系統整合 =====
 use App\Http\Controllers\BrainIntegrationController;
 
