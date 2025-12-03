@@ -2,150 +2,134 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BusinessItemController;
+use App\Http\Controllers\SystemController;
 use App\Http\Controllers\LineBotController;
 use App\Http\Controllers\BillController;
 
-//取得所有的權限項目
-Route::get('/permissions', [ApiController::class, 'getPermissions']);
-//取得所有的群組名稱
-Route::get('/roles', [ApiController::class, 'getRoles']);
-//新增權限項目
-Route::post('/create-permission', [ApiController::class, 'createPermission']);
-//新增群組名稱
-Route::post('/create-role', [ApiController::class, 'createRole']);
-//刪除權限項目
-Route::post('/delete-permission', [ApiController::class, 'deletePermission']);
-//刪除群組名稱
-Route::post('/delete-role', [ApiController::class, 'deleteRole']);
-//修改群組名稱
-Route::post('/modify-role', [ApiController::class, 'modifyRole']);
-//建立群組與權限的關聯
-Route::post('/create-or-update-role-permission', [ApiController::class, 'createOrUpdateRolePermission']);
-//建立使用者
-Route::post('/create-member', [ApiController::class, 'createMember']);
-//建立使用者會用到的資訊
-Route::get('/create-member-info', [ApiController::class, 'createMemberInfo']);
-//修改使用者
-Route::post('/update-member', [ApiController::class, 'updateMember']);
-//刪除使用者
-Route::post('/delete-member', [ApiController::class, 'deleteMember']);
-//取得使用者資訊
-Route::post('/get-memberinfo', [ApiController::class, 'getMemberInfo']);
-//修改使用者密碼
-Route::post('/update-member-password', [ApiController::class, 'updateMemberPassword']);
-//重置使用者密碼
-Route::post('/reset-member-password', [ApiController::class, 'resetMemberPassword']);
-//使用者的場館 列表
-Route::get('/get-branch-list', [ApiController::class, 'getBranchList']);
-//取得場館資訊
-Route::post('/get-branch-info', [ApiController::class, 'getBranchInfo']);
-//新增使用者的場館
-Route::post('/create-branch', [ApiController::class, 'createBranch']);
-//修改使用者的場館
-Route::post('/update-branch', [ApiController::class, 'updateBranch']);
-//刪除使用者的場館
-Route::post('/delete-branch', [ApiController::class, 'deleteBranch']);
-//登入
-Route::post('/login', [ApiController::class, 'login']);
-//登出
-Route::post('/logout', [ApiController::class, 'logout']);
-//取得所有使用者
-Route::get('/get-all-members', [ApiController::class, 'getAllMembers']);
-//取得所有客戶列表
-Route::get('/get-customers-list', [ApiController::class, 'getCustomersList']);
-//新增客戶
-Route::post('/create-customer', [ApiController::class, 'createCustomer']);
-//修改客戶
-Route::post('/update-customer', [ApiController::class, 'updateCustomer']);
-//刪除客戶
-Route::post('/delete-customer', [ApiController::class, 'deleteCustomer']);
-//取得客戶資訊
-Route::post('/get-customer-info', [ApiController::class, 'getCustomerInfo']);
-//新增業務項目
-Route::post('/create-business-item', [ApiController::class, 'createBusinessItem']);
-//修改業務項目
-Route::post('/update-business-item', [ApiController::class, 'updateBusinessItem']);
-//刪除業務項目
-Route::post('/delete-business-item', [ApiController::class, 'deleteBusinessItem']);
-//取得業務項目資訊
-Route::post('/get-business-item-info', [ApiController::class, 'getBusinessItemInfo']);
-//取得業務項目列表
-Route::get('/get-business-item-list', [ApiController::class, 'getBusinessItemList']);
-//取得Line Bot設定列表
-Route::get('/get-line-bot-list', [ApiController::class, 'getLineBotList']);
-//修改Line Bot設定
-Route::post('/update-line-bot', [ApiController::class, 'updateLineBot']);
-//取得系統設定
-Route::get('/get-config', [ApiController::class, 'getConfig']);
-//更新系統設定
-Route::post('/update-config', [ApiController::class, 'updateConfig']);
-//新增合約
-Route::post('/create-project', [ApiController::class, 'createProject']);
-//修改合約
-Route::post('/update-project', [ApiController::class, 'updateProject']);
-//刪除合約
-Route::post('/delete-project', [ApiController::class, 'deleteProject']);
-//取得合約列表
-Route::get('/get-project-list', [ApiController::class, 'getProjectList']);
-//取得合約內容
-Route::post('/get-project-info', [ApiController::class, 'getProjectInfo']);
-//新增繳費歷程
-Route::post('/create-payment-history', [ApiController::class, 'createPaymentHistory']);
-//列出繳費歷程
-Route::get('/get-payment-history-list', [ApiController::class, 'getPaymentHistoryList']);
-//確認合約
-Route::post('/confirm-contract', [ApiController::class, 'confirmContract']);
-//上傳合約 PDF
-Route::post('/upload-contract-pdf', [ApiController::class, 'uploadContractPdf']);
-//下載合約 PDF
-Route::get('/download-contract/{projectId}', [ApiController::class, 'downloadContract']);
-//發送 Line 訊息
+// ===== 權限/角色管理（已重構到 MemberController） =====
+Route::get('/permissions', [MemberController::class, 'getPermissions']);
+Route::get('/roles', [MemberController::class, 'getRoles']);
+Route::post('/create-permission', [MemberController::class, 'createPermission']);
+Route::post('/create-role', [MemberController::class, 'createRole']);
+Route::post('/delete-permission', [MemberController::class, 'deletePermission']);
+Route::post('/delete-role', [MemberController::class, 'deleteRole']);
+Route::post('/modify-role', [MemberController::class, 'modifyRole']);
+Route::post('/create-or-update-role-permission', [MemberController::class, 'createOrUpdateRolePermission']);
+
+// ===== 會員管理（已重構到 MemberController） =====
+Route::post('/create-member', [MemberController::class, 'createMember']);
+Route::get('/create-member-info', [MemberController::class, 'createMemberInfo']);
+Route::post('/update-member', [MemberController::class, 'updateMember']);
+Route::post('/delete-member', [MemberController::class, 'deleteMember']);
+Route::post('/get-memberinfo', [MemberController::class, 'getMemberInfo']);
+Route::post('/update-member-password', [MemberController::class, 'updateMemberPassword']);
+Route::post('/reset-member-password', [MemberController::class, 'resetMemberPassword']);
+Route::get('/get-all-members', [MemberController::class, 'getAllMembers']);
+Route::post('/login', [MemberController::class, 'login']);
+Route::post('/logout', [MemberController::class, 'logout']);
+
+// ===== 前端會員認證（MemberController） =====
+Route::post('/member/register', [MemberController::class, 'register']);
+Route::post('/member/update-password', [MemberController::class, 'updatePassword']);
+Route::post('/member/forgot-password', [MemberController::class, 'forgotPassword']);
+Route::post('/member/reset-password', [MemberController::class, 'resetPassword']);
+
+// ===== 分館管理（已重構到 BranchController） =====
+Route::get('/get-branch-list', [BranchController::class, 'getBranchList']);
+Route::post('/get-branch-info', [BranchController::class, 'getBranchInfo']);
+Route::post('/create-branch', [BranchController::class, 'createBranch']);
+Route::post('/update-branch', [BranchController::class, 'updateBranch']);
+Route::post('/delete-branch', [BranchController::class, 'deleteBranch']);
+
+// ===== 客戶管理（已重構到 CustomerController） =====
+Route::get('/get-customers-list', [CustomerController::class, 'getCustomersList']);
+Route::post('/create-customer', [CustomerController::class, 'createCustomer']);
+Route::post('/update-customer', [CustomerController::class, 'updateCustomer']);
+Route::post('/delete-customer', [CustomerController::class, 'deleteCustomer']);
+Route::post('/get-customer-info', [CustomerController::class, 'getCustomerInfo']);
+Route::get('/export-customers-example', [CustomerController::class, 'exportCustomersExample']);
+Route::get('/export-customers', [CustomerController::class, 'exportCustomers']);
+Route::post('/import-customers', [CustomerController::class, 'importCustomers']);
+
+// ===== 業務項目管理（已重構到 BusinessItemController） =====
+Route::post('/create-business-item', [BusinessItemController::class, 'createBusinessItem']);
+Route::post('/update-business-item', [BusinessItemController::class, 'updateBusinessItem']);
+Route::post('/delete-business-item', [BusinessItemController::class, 'deleteBusinessItem']);
+Route::post('/get-business-item-info', [BusinessItemController::class, 'getBusinessItemInfo']);
+Route::get('/get-business-item-list', [BusinessItemController::class, 'getBusinessItemList']);
+Route::get('/export-business-items-example', [BusinessItemController::class, 'exportBusinessItemsExample']);
+Route::get('/export-business-items', [BusinessItemController::class, 'exportBusinessItems']);
+Route::post('/import-business-items', [BusinessItemController::class, 'importBusinessItems']);
+
+// ===== 合約管理（已重構到 ProjectController） =====
+Route::post('/create-project', [ProjectController::class, 'createProject']);
+Route::post('/update-project', [ProjectController::class, 'updateProject']);
+Route::post('/delete-project', [ProjectController::class, 'deleteProject']);
+Route::get('/get-project-list', [ProjectController::class, 'getProjectList']);
+Route::post('/get-project-info', [ProjectController::class, 'getProjectInfo']);
+Route::get('/public/project/{id}', [ProjectController::class, 'getPublicProjectInfo']);
+Route::get('/contract-pdf/{projectId}', [ProjectController::class, 'getContractPdf']);
+Route::get('/export-projects-example', [ProjectController::class, 'exportProjectsExample']);
+Route::get('/export-projects', [ProjectController::class, 'exportProjects']);
+Route::post('/import-projects', [ProjectController::class, 'importProjects']);
+
+// ===== 繳費歷程（已重構到 ProjectController） =====
+Route::post('/create-payment-history', [ProjectController::class, 'createPaymentHistory']);
+Route::get('/get-payment-history-list', [ProjectController::class, 'getPaymentHistoryList']);
+
+// ===== 合約確認/上傳（已重構到 ProjectController） =====
+Route::post('/confirm-contract', [ProjectController::class, 'confirmContract']);
+Route::post('/upload-contract-pdf', [ProjectController::class, 'uploadContractPdf']);
+Route::get('/download-contract/{projectId}', [ProjectController::class, 'downloadContract']);
+
+// ===== 系統設定（已重構到 SystemController） =====
+Route::get('/get-config', [SystemController::class, 'getConfig']);
+Route::post('/update-config', [SystemController::class, 'updateConfig']);
+Route::get('/get-line-bot-list', [SystemController::class, 'getLineBotList']);
+Route::post('/update-line-bot', [SystemController::class, 'updateLineBot']);
+Route::get('/get-system-log', [SystemController::class, 'getSystemLog']);
+
+// ===== 其他功能（暫時保留在 ApiController） =====
 Route::post('/send-line-message', [ApiController::class, 'sendLineMessage']);
-//Dashboard
 Route::get('/dashboard', [ApiController::class, 'dashboard']);
-//系統異動log
-Route::get('/get-system-log', [ApiController::class, 'getSystemLog']);
-//匯出客戶資料的範例
-Route::get('/export-customers-example', [ApiController::class, 'exportCustomersExample']);
-//匯出客戶資料
-Route::get('/export-customers', [ApiController::class, 'exportCustomers']);
-//匯入客戶資料
-Route::post('/import-customers', [ApiController::class, 'importCustomers']);
-//匯出業務項目的範例
-Route::get('/export-business-items-example', [ApiController::class, 'exportBusinessItemsExample']);
-//匯出業務項目
-Route::get('/export-business-items', [ApiController::class, 'exportBusinessItems']);
-//匯入業務項目
-Route::post('/import-business-items', [ApiController::class, 'importBusinessItems']);
-//匯出專案的範例
-Route::get('/export-projects-example', [ApiController::class, 'exportProjectsExample']);
-//匯出專案
-Route::get('/export-projects', [ApiController::class, 'exportProjects']);
-//匯入專案
-Route::post('/import-projects', [ApiController::class, 'importProjects']);
 
-
-//Line Bot Webhook
-// Route::post('/line-bot-webhook', [LineBotController::class, 'webhook']);
+// ===== LINE Bot Webhook =====
 Route::post('/webhook/{botId?}', [LineBotController::class, 'webhook'])->name('line.webhook');
 Route::post('/send-message', [LineBotController::class, 'sendMessage']);
 Route::post('/broadcast', [LineBotController::class, 'broadcast']);
-//新增客戶
 Route::post('/create-customer-user', [LineBotController::class, 'createCustomerUser']);
-//取得客戶資訊
 Route::post('/get-customer-user', [LineBotController::class, 'getCustomerUser']);
 
-// 添加公開的合約資料路由
-Route::get('/public/project/{id}', [ApiController::class, 'getPublicProjectInfo']);
-
-// 獲取合約PDF
-Route::get('/contract-pdf/{projectId}', [ApiController::class, 'getContractPdf']);
-
-// 发票管理API路由
+// ===== 發票管理 =====
 Route::prefix('bills')->group(function () {
-    Route::get('/', [BillController::class, 'index']);  // 获取所有发票
-    Route::get('/{id}', [BillController::class, 'show']);  // 获取单个发票
-    Route::post('/', [BillController::class, 'store']);  // 创建发票
-    Route::put('/{id}', [BillController::class, 'update']);  // 更新发票
-    Route::delete('/{id}', [BillController::class, 'destroy']);  // 删除发票
+    Route::get('/', [BillController::class, 'index']);
+    Route::get('/{id}', [BillController::class, 'show']);
+    Route::post('/', [BillController::class, 'store']);
+    Route::put('/{id}', [BillController::class, 'update']);
+    Route::delete('/{id}', [BillController::class, 'destroy']);
+});
+
+// ===== Brain AI 系統整合 =====
+use App\Http\Controllers\BrainIntegrationController;
+
+Route::prefix('brain')->group(function () {
+    // 查詢客戶資料（by LINE userId）
+    Route::get('/customer/{lineUserId}', [BrainIntegrationController::class, 'getCustomerByLineId']);
+
+    // 查詢客戶合約
+    Route::get('/customer/{lineUserId}/contracts', [BrainIntegrationController::class, 'getCustomerContracts']);
+
+    // 查詢客戶繳費記錄
+    Route::get('/customer/{lineUserId}/payments', [BrainIntegrationController::class, 'getCustomerPayments']);
+
+    // 建立潛在客戶（Brain 轉交）
+    Route::post('/leads', [BrainIntegrationController::class, 'createLead']);
+
+    // 記錄互動
+    Route::post('/interactions', [BrainIntegrationController::class, 'recordInteraction']);
 });
