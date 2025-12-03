@@ -167,9 +167,10 @@ export function BillDashboard() {
 
     const getCurrentBranchName = () => {
         if (!user) return "未登入";
-        if (user.is_top_account) return "所有分館";
-        // 根據 branch_id 查找分館名稱
-        const branch = branches.find(b => b.id === user.branch_id);
+        if (isTopAccount) return "所有分館";
+        // 根據 branch_id 查找分館名稱（使用 Number 確保型別一致）
+        const userBranchId = Number(user.branch_id);
+        const branch = branches.find(b => Number(b.id) === userBranchId);
         return branch?.name || "未知分館";
     };
 
