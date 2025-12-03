@@ -8,16 +8,16 @@ use App\Models\LineBot;
 use Illuminate\Http\Request;
 
 /**
- * 4(¡§6h
+ * åˆ†é¤¨ç®¡ç†æŽ§åˆ¶å™¨
  *
- * U4( CRUD
+ * è™•ç†åˆ†é¤¨ CRUD
  */
 class BranchController extends Controller
 {
     use ApiHelperTrait;
 
     /**
-     * („4(h
+     * å–å¾—åˆ†é¤¨åˆ—è¡¨
      */
     public function getBranchList(Request $request)
     {
@@ -42,38 +42,37 @@ class BranchController extends Controller
                 'updated_at'
             )->get();
 
-            \Log::info('Branches found:', ['count' => $branches->count(), 'data' => $branches]);
+            \Log::info('Branches found:', ['count' => $branches->count()]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'rÖŸ',
+                'message' => 'success',
                 'data' => $branches
             ]);
         } catch (\Exception $e) {
             \Log::error('Error fetching branches: ' . $e->getMessage());
-            return $this->errorResponse('rÖ1W: ' . $e->getMessage());
+            return $this->errorResponse('Failed to fetch branches: ' . $e->getMessage());
         }
     }
 
     /**
-     * Ö—4(Ç
-
+     * å–å¾—å–®ä¸€åˆ†é¤¨è³‡è¨Š
      */
     public function getBranchInfo(Request $request)
     {
         try {
             $branch = Branch::find($request->id);
             if (!$branch) {
-                return $this->errorResponse('(%X(');
+                return $this->errorResponse('Branch not found');
             }
-            return $this->successResponse('rÖŸ', $branch);
+            return $this->successResponse('success', $branch);
         } catch (\Exception $e) {
-            return $this->errorResponse('rÖ1W');
+            return $this->errorResponse('Failed to get branch info');
         }
     }
 
     /**
-     * °ž(„4(
+     * æ–°å¢žåˆ†é¤¨
      */
     public function createBranch(Request $request)
     {
@@ -83,7 +82,7 @@ class BranchController extends Controller
         }
 
         if (empty($request->name)) {
-            return $this->errorResponse('4(1ýºz');
+            return $this->errorResponse('Branch name is required');
         }
 
         if (empty($request->status)) {
@@ -97,15 +96,15 @@ class BranchController extends Controller
             'updated_at' => now()
         ]);
 
-        $branch_status = $branch->status == 1 ? '_(' : '\(';
-        $systemlog_description = '[°ž4(] 4(1:'.$branch->name.' 4(0@:'.$branch->address.' 4(ûq:'.$branch->phone.' 4(ÀK:'.$branch_status;
-        $this->createSystemLog($member->id, '°ž', $systemlog_description, 'branches', $branch->id, 'create');
+        $branch_status = $branch->status == 1 ? 'Enabled' : 'Disabled';
+        $systemlog_description = '[Create Branch] Name:'.$branch->name.' Address:'.$branch->address.' Phone:'.$branch->phone.' Status:'.$branch_status;
+        $this->createSystemLog($member->id, 'Create', $systemlog_description, 'branches', $branch->id, 'create');
 
-        return $this->successResponse('°žŸ');
+        return $this->successResponse('Branch created successfully');
     }
 
     /**
-     * î9(„4(
+     * æ›´æ–°åˆ†é¤¨
      */
     public function updateBranch(Request $request)
     {
@@ -116,14 +115,14 @@ class BranchController extends Controller
 
         $branch = Branch::find($request->id);
         if (!$branch) {
-            return $this->errorResponse('4(X(');
+            return $this->errorResponse('Branch not found');
         }
 
         if (empty($request->name)) {
-            return $this->errorResponse('4(1ýºz');
+            return $this->errorResponse('Branch name is required');
         }
 
-        // nšô°„Wµ
+        // åªæ›´æ–°æäº¤çš„æ¬„ä½
         $branch->update([
             'name' => $request->name,
             'status' => (int)$request->status,
@@ -138,11 +137,11 @@ class BranchController extends Controller
             'remarks' => $request->remarks
         ]);
 
-        return $this->successResponse('ô°Ÿ');
+        return $this->successResponse('Branch updated successfully');
     }
 
     /**
-     * *d(„4(
+     * åˆªé™¤åˆ†é¤¨
      */
     public function deleteBranch(Request $request)
     {
@@ -153,16 +152,16 @@ class BranchController extends Controller
 
         $branch = Branch::find($request->id);
         if (!$branch) {
-            return $this->errorResponse('4(X(');
+            return $this->errorResponse('Branch not found');
         }
 
         $branch->delete();
         $branch->members()->detach();
         $branch->lineBot()->delete();
 
-        $systemlog_description = '[*d4(] 4(1:'.$branch->name;
-        $this->createSystemLog($member->id, '*d', $systemlog_description, 'branches', $branch->id, 'delete');
+        $systemlog_description = '[Delete Branch] Name:'.$branch->name;
+        $this->createSystemLog($member->id, 'Delete', $systemlog_description, 'branches', $branch->id, 'delete');
 
-        return $this->successResponse('*dŸ');
+        return $this->successResponse('Branch deleted successfully');
     }
 }
