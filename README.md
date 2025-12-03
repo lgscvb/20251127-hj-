@@ -2,12 +2,42 @@
 
 這是 Jungle Group 的主要專案儲存庫，包含多個子專案。
 
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4.svg)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20.svg)](https://laravel.com/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D.svg)](https://vuejs.org/)
+
 ## 專案結構
 
 - `AccountingFirm/` - 會計事務所相關系統
-- `hourjungle_backend/` - Hour Jungle 後端服務
-- `hourjungle_frontend/` - Hour Jungle 前端應用
+- `hourjungle_backend/` - Hour Jungle 後端服務 (Laravel 11)
+- `hourjungle_frontend/` - Hour Jungle 前端應用 (Vue 3)
 - `jungle_chat_py/` - Jungle Chat AI 聊天服務
+
+## 🔗 Brain AI 整合
+
+Hour Jungle 系統與 Brain AI 客服系統已完成整合，提供以下功能：
+
+### 整合 API 端點
+| Method | Endpoint | 說明 |
+|--------|----------|------|
+| GET | `/api/brain/customer/{lineUserId}` | 查詢客戶資料 |
+| GET | `/api/brain/customer/{lineUserId}/contracts` | 查詢客戶合約 |
+| GET | `/api/brain/customer/{lineUserId}/payments` | 查詢繳費記錄 |
+| POST | `/api/brain/leads` | 建立潛在客戶 |
+| POST | `/api/brain/interactions` | 記錄客戶互動 |
+
+### 認證方式
+使用 `X-Brain-Api-Key` Header 進行 API 認證：
+```bash
+curl -X GET "https://your-domain/api/brain/customer/U1234567890" \
+  -H "X-Brain-Api-Key: your-api-key"
+```
+
+### 環境變數
+```env
+# Brain AI Integration
+BRAIN_API_KEY=your-api-key-here
+```
 
 ## ⚠️ 重要提醒：敏感憑證管理
 
