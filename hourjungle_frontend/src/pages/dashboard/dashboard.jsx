@@ -538,7 +538,7 @@ export function Dashboard() {
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {PAYMENT_PLANS.find(t => t.value === project.payment_period)?.label || '-'}
+                                                    {PAYMENT_PLANS.find(t => t.value === parseInt(project.payment_period))?.label || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
@@ -564,8 +564,8 @@ export function Dashboard() {
                                             <td className="py-3 px-5">
                                                 <Chip
                                                     variant="gradient"
-                                                    color={project.contract_status === 1 ? "green" : "red"}
-                                                    value={project.contract_status === 1 ? "啟用" : "停用"}
+                                                    color={project.status === 1 ? "green" : "red"}
+                                                    value={project.status === 1 ? "啟用" : "停用"}
                                                     className="py-0.5 px-2 text-[11px] font-medium w-fit"
                                                 />
                                             </td>
