@@ -107,25 +107,29 @@ class CrmMigrationSeeder extends Seeder
     }
 
     /**
-     * 建立業務項目
+     * 建立業務項目對應（使用現有項目）
      */
     private function setupBusinessItems(): void
     {
-        $this->command->info('建立業務項目...');
+        $this->command->info('設定業務項目對應...');
 
-        $items = [
-            'virtual_office' => '虛擬辦公室',
-            'coworking_fixed' => '共享空間固定座',
-            'coworking_flexible' => '共享空間自由座',
+        // 使用現有的業務項目（不建立新的）
+        $mapping = [
+            'virtual_office' => '營業登記',      // ID 1
+            'coworking_fixed' => '月租固定座位',  // ID 2
+            'coworking_flexible' => '月租自由座位', // ID 3
         ];
 
-        foreach ($items as $code => $name) {
-            $item = BusinessItem::firstOrCreate(
-                ['name' => $name],
-                ['status' => 1]
-            );
-            $this->businessItemMapping[$code] = $item->id;
-            $this->command->info("  - {$name} ID: {$item->id}");
+        foreach ($mapping as $code => $name) {
+            $item = BusinessItem::where('name', $name)->first();
+            if ($item) {
+                $this->businessItemMapping[$code] = $item->id;
+                $this->command->info("  - {$name} ID: {$item->id}");
+            } else {
+                // 如果找不到，使用預設 ID 1
+                $this->businessItemMapping[$code] = 1;
+                $this->command->warn("  - {$name} 未找到，使用預設 ID: 1");
+            }
         }
     }
 
