@@ -1385,8 +1385,8 @@ export function ProjectList() {
                                             key={project.id}
                                             className={`${getRowStyle(project.next_pay_day, project.end_day)} hover:bg-blue-gray-50/50 transition-colors`}
                                         >
-                                            <td className="py-3 px-5">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
+                                            <td className="py-3 px-5 max-w-[150px]">
+                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell truncate">
                                                     {project.projectName}
                                                 </Typography>
                                             </td>
@@ -1402,12 +1402,12 @@ export function ProjectList() {
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                  {PAYMENT_PLANS.find(t => t.value === project.payment_period)?.label}
+                                                  {PAYMENT_PLANS.find(t => t.value === parseInt(project.payment_period))?.label || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {CONTRACT_TYPES.find(t => t.value === project.contractType)?.label}
+                                                    {CONTRACT_TYPES.find(t => t.value === String(project.contractType))?.label || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">

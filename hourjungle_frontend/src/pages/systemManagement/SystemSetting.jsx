@@ -31,7 +31,7 @@ import {
 export function SystemSetting() {
   const dispatch = useDispatch();
   const { list: branches } = useSelector(state => state.branches);
-  const { data: configData } = useSelector(state => state.config);
+  const { data: configData, loading: configLoading } = useSelector(state => state.config);
   const { list: lineBots } = useSelector(state => state.lineBot);
   const user = useSelector(state => state.auth.user) || {};
   
@@ -318,7 +318,7 @@ export function SystemSetting() {
             </Typography>
           </CardHeader>
           <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {!configData ? (
+            {configLoading ? (
               // 显示加载动画
               <div className="flex justify-center items-center min-h-[200px] md:col-span-2">
                 <Spinner className="h-12 w-12" />

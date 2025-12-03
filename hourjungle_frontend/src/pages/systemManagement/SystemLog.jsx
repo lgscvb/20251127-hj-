@@ -64,7 +64,10 @@ const SEARCH_ACTION_MAP = {
 
 export function SystemLog() {
   const dispatch = useDispatch();
-  const { list: systemLogs, loading, error } = useSelector(state => state.systemLog);
+  const { list: systemLogs, loading, error } = useSelector(state => {
+    console.log('SystemLog Redux State:', state.systemLog);
+    return state.systemLog;
+  });
   const { list: branches } = useSelector(state => state.branches);
   const { user } = useSelector(state => state.auth);
   const [pagination, setPagination] = useState({
@@ -91,7 +94,12 @@ export function SystemLog() {
     if (user?.is_top_account) {
       dispatch(fetchBranches());
     }
-    dispatch(fetchSystemLog({ branch_id: user?.branch_id }));
+    // Fetch all logs initially, filtering will be done by the API if needed
+    const initialFilters = {};
+    if (!user?.is_top_account && user?.branch_id) {
+      initialFilters.branch_id = parseInt(user.branch_id);
+    }
+    dispatch(fetchSystemLog(initialFilters));
   }, [dispatch, user]);
 
   const handleSearch = () => {
@@ -283,7 +291,7 @@ export function SystemLog() {
                     <Spinner className="h-8 w-8 mx-auto" />
                   </td>
                 </tr>
-              ) : systemLogs && systemLogs.length > 0 ? (
+              ) : systemLogs && Array.isArray(systemLogs) && systemLogs.length > 0 ? (
                 getPaginatedData().map((log, key) => {
                   const className = `py-3 px-5 ${
                     key === systemLogs.length - 1

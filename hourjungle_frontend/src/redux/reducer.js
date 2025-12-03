@@ -568,7 +568,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         systemLog: {
-          list: action.payload,
+          list: Array.isArray(action.payload) ? action.payload : [],
           loading: false,
           error: null
         }
