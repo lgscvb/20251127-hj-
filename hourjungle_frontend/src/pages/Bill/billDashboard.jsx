@@ -299,16 +299,16 @@ export function BillDashboard() {
             icon: BanknotesIcon,
             title: "本月營收",
             value: `$${dashboardData?.monthly_revenue?.toLocaleString() || 0}`,
-            footerIcon: ArrowUpIcon,
-            footerText: "較上月增加 12%"
+            footerIcon: null,
+            footerText: "根據啟用合約計算"
         },
         {
             color: "green",
             icon: DocumentTextIcon,
             title: "當月進項發票金額",
             value: `$${dashboardData?.input_invoice_amount?.toLocaleString() || 0}`,
-            footerIcon: ArrowUpIcon,
-            footerText: "較上月增加 5%"
+            footerIcon: null,
+            footerText: "預估值（約營收5%）"
         },
         {
             color: "orange",
@@ -316,7 +316,7 @@ export function BillDashboard() {
             title: "預估稅額",
             value: `$${dashboardData?.estimated_tax?.toLocaleString() || 0}`,
             footerIcon: null,
-            footerText: "本期待核算"
+            footerText: "預估值（約營收5%）"
         },
         {
             color: "red",
