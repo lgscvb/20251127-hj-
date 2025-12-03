@@ -61,8 +61,20 @@ export const PAYMENT_PLANS = [
 // 合約類型選項
 export const CONTRACT_TYPES = [
     { value: "1", label: "1年約", years: 1 },
-    { value: "2", label: "2年約", years: 2 },
-    { value: "3", label: "3年約", years: 3 }
+    { value: "2", label: "2年約", years: 2 }
+];
+
+// 價格預設選項（防呆機制）
+const PRICE_OPTIONS = [
+    { value: 3000, label: '3,000 元/月' },
+    { value: 5000, label: '5,000 元/月' },
+    { value: 8000, label: '8,000 元/月' },
+    { value: 10000, label: '10,000 元/月' },
+    { value: 15000, label: '15,000 元/月' },
+    { value: 20000, label: '20,000 元/月' },
+    { value: 25000, label: '25,000 元/月' },
+    { value: 30000, label: '30,000 元/月' },
+    { value: 'manual', label: '手動輸入' },
 ];
 
 // 定義合約狀態常量
@@ -252,6 +264,8 @@ export function ProjectList() {
     const [selectedCustomerId, setSelectedCustomerId] = useState("");
     const [paymentHistoryOpen, setPaymentHistoryOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState(null);
+    const [isManualPrice, setIsManualPrice] = useState(false); // 控制是否手動輸入價格
+    const [selectedPriceOption, setSelectedPriceOption] = useState(''); // 選擇的價格選項
 
     // 在組件頂部準備數據
     const projectNames = useMemo(() => 
@@ -653,6 +667,8 @@ export function ProjectList() {
         if (open) {
             // 開啟新增對話框時，重置表單數據為初始狀態
             setProjectData({...initialProjectData});
+            setIsManualPrice(false);  // 重置手動輸入狀態
+            setSelectedPriceOption('');  // 重置價格選項
         }
         setOpenAdd(open);
     };
@@ -1643,16 +1659,42 @@ export function ProjectList() {
                             readOnly
                         />
 
-                        {/* 當期款項 */}
-                        <Input
-                            type="number"
-                            label="當期款項"
-                            value={projectData.sale_price}
-                            onChange={(e) => setProjectData({
-                                ...projectData,
-                                sale_price: parseFloat(e.target.value) || 0
-                            })}
-                        />
+                        {/* 當期款項（防呆機制） */}
+                        <div className="flex flex-col gap-2">
+                            <Select
+                                label="當期款項"
+                                value={selectedPriceOption}
+                                onChange={(value) => {
+                                    setSelectedPriceOption(value);
+                                    if (value === 'manual') {
+                                        setIsManualPrice(true);
+                                    } else {
+                                        setIsManualPrice(false);
+                                        setProjectData({
+                                            ...projectData,
+                                            sale_price: parseFloat(value) || 0
+                                        });
+                                    }
+                                }}
+                            >
+                                {PRICE_OPTIONS.map((option) => (
+                                    <Option key={option.value} value={option.value.toString()}>
+                                        {option.label}
+                                    </Option>
+                                ))}
+                            </Select>
+                            {isManualPrice && (
+                                <Input
+                                    type="number"
+                                    label="輸入金額"
+                                    value={projectData.sale_price}
+                                    onChange={(e) => setProjectData({
+                                        ...projectData,
+                                        sale_price: parseFloat(e.target.value) || 0
+                                    })}
+                                />
+                            )}
+                        </div>
 
                         <Input
                             type="number"

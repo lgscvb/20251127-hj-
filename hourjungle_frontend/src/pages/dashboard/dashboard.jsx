@@ -72,8 +72,7 @@ export const PAYMENT_PLANS = [
 // 合約類型選項
 export const CONTRACT_TYPES = [
     { value: "1", label: "1年約", years: 1 },
-    { value: "2", label: "2年約", years: 2 },
-    { value: "3", label: "3年約", years: 3 }
+    { value: "2", label: "2年約", years: 2 }
 ];
 // 添加判斷合約到期的函數
 const getContractStatus = (endDay, nextPayDay) => {
@@ -135,8 +134,8 @@ export function Dashboard() {
     // 獲取當前分館名稱
     const getCurrentBranchName = () => {
         if (!user) return "未登入";
-        // 確保 is_top_account 的判斷正確（可能是 1 或 true 或 "1"）
-        if (user.is_top_account == 1 || user.is_top_account === true) return "所有分館";
+        // 使用 isTopAccount 來判斷（已在 usePermission 中統一處理型別轉換）
+        if (isTopAccount) return "所有分館";
         return user.branch || "未設定分館";
     };
 

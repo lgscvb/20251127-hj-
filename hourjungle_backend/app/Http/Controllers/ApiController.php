@@ -2792,8 +2792,11 @@ class ApiController extends Controller
             // 計算未收款項（截至該月底）
             $unpaid = 0;
             foreach ($projects as $project) {
-                if ($project->next_pay_day && strtotime($project->next_pay_day) <= strtotime($endDate)) {
-                    $unpaid += $project->current_payment;
+                if (!$project->next_pay_day) continue;
+                // 確保日期格式統一
+                $nextPayDay = is_string($project->next_pay_day) ? $project->next_pay_day : $project->next_pay_day->format('Y-m-d');
+                if (strtotime($nextPayDay) <= strtotime($endDate)) {
+                    $unpaid += ($project->current_payment ?? 0);
                 }
             }
 
@@ -2809,7 +2812,10 @@ class ApiController extends Controller
         $thisMonthKey = date('Y-m');
 
         $this_month_receivable = $projects->filter(function($p) use ($thisMonthStart, $thisMonthEnd) {
-            return $p->next_pay_day >= $thisMonthStart && $p->next_pay_day <= $thisMonthEnd;
+            if (!$p->next_pay_day) return false;
+            // 確保日期格式統一
+            $nextPayDay = is_string($p->next_pay_day) ? $p->next_pay_day : $p->next_pay_day->format('Y-m-d');
+            return $nextPayDay >= $thisMonthStart && $nextPayDay <= $thisMonthEnd;
         })->sum('current_payment');
 
         $this_month_receipt = isset($payments[$thisMonthKey])
@@ -2850,8 +2856,17 @@ class ApiController extends Controller
      */
     private function shouldPayInMonth($project, $startDate, $endDate)
     {
+        // 確保日期格式統一（轉換為字串進行比較）
+        $projectStart = $project->start_day ? (is_string($project->start_day) ? $project->start_day : $project->start_day->format('Y-m-d')) : null;
+        $projectEnd = $project->end_day ? (is_string($project->end_day) ? $project->end_day : $project->end_day->format('Y-m-d')) : null;
+
+        // 如果沒有合約起訖日，返回 false
+        if (!$projectStart || !$projectEnd) {
+            return false;
+        }
+
         // 檢查合約期間是否與該月重疊
-        if ($project->start_day > $endDate || $project->end_day < $startDate) {
+        if ($projectStart > $endDate || $projectEnd < $startDate) {
             return false;
         }
 
@@ -2865,7 +2880,7 @@ class ApiController extends Controller
         };
 
         // 從合約開始日計算所有付款日
-        $payDay = strtotime($project->start_day);
+        $payDay = strtotime($projectStart);
         $targetMonth = date('Y-m', strtotime($startDate));
         $endTimestamp = strtotime($endDate);
 
@@ -2884,14 +2899,23 @@ class ApiController extends Controller
      */
     private function calculateYearlyReceivable($project, $yearStart, $yearEnd)
     {
+        // 確保日期格式統一（轉換為字串進行比較）
+        $projectStart = $project->start_day ? (is_string($project->start_day) ? $project->start_day : $project->start_day->format('Y-m-d')) : null;
+        $projectEnd = $project->end_day ? (is_string($project->end_day) ? $project->end_day : $project->end_day->format('Y-m-d')) : null;
+
+        // 如果沒有合約起訖日，返回 0
+        if (!$projectStart || !$projectEnd) {
+            return 0;
+        }
+
         // 檢查合約期間是否與該年重疊
-        if ($project->start_day > $yearEnd || $project->end_day < $yearStart) {
+        if ($projectStart > $yearEnd || $projectEnd < $yearStart) {
             return 0;
         }
 
         // 計算實際重疊期間
-        $start = max($project->start_day, $yearStart);
-        $end = min($project->end_day, $yearEnd);
+        $start = max($projectStart, $yearStart);
+        $end = min($projectEnd, $yearEnd);
 
         $startMonth = (int)date('n', strtotime($start));
         $endMonth = (int)date('n', strtotime($end));
@@ -2906,7 +2930,7 @@ class ApiController extends Controller
             default => 0
         };
 
-        return $project->current_payment * $payments;
+        return ($project->current_payment ?? 0) * $payments;
     }
 
     /**

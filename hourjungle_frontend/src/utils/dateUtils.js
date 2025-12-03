@@ -1,15 +1,29 @@
+// 輔助函數：將日期字串轉為本地日期（只比較日期部分）
+const toLocalDate = (dateStr) => {
+    if (!dateStr) return null;
+    // 處理不同格式的日期字串
+    const dateOnly = dateStr.split('T')[0]; // 取得 YYYY-MM-DD 部分
+    const [year, month, day] = dateOnly.split('-').map(Number);
+    return new Date(year, month - 1, day); // 使用本地時間
+};
+
 export const isNearPayment = (nextPayDay) => {
-    if (!nextPayDay) return false;
-    const payDate = new Date(nextPayDay);
+    const payDate = toLocalDate(nextPayDay);
+    if (!payDate) return false;
+
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
     const diffDays = Math.ceil((payDate - now) / (1000 * 60 * 60 * 24));
     return diffDays <= 5 && diffDays > 0;
 };
 
 export const isOverdue = (nextPayDay) => {
-    if (!nextPayDay) return false;
-    const payDate = new Date(nextPayDay);
+    const payDate = toLocalDate(nextPayDay);
+    if (!payDate) return false;
+
     const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    // 如果付款日期在今天之前（不包括今天），則為逾期
     return payDate < now;
 };
 

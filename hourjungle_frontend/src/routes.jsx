@@ -11,9 +11,10 @@ import {
   UsersIcon,
   PresentationChartLineIcon,
   DocumentCheckIcon,
-  StarIcon
+  StarIcon,
+  ArchiveBoxIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications, Dashboard, CustomerList, BusinessItemList, ProjectList} from "@/pages/dashboard";
+import { Home, Profile, Tables, Notifications, Dashboard, CustomerList, BusinessItemList, ProjectList, ArchivedProjects } from "@/pages/dashboard";
 import {  BillDashboard , BillList } from "@/pages/Bill";
 import { SignIn, SignUp, Test } from "@/pages/auth";
 import { MemberList, MemberGroup, SystemSetting, PermissionList, BranchList, SystemLog } from "@/pages/systemManagement";
@@ -82,7 +83,13 @@ export const routes = [
         element: <ProjectList />,
         requiredRole: 3,
       },
-      
+      {
+        icon: <ArchiveBoxIcon {...icon} />,
+        name: "已結束合約",
+        path: "/archivedProjects",
+        element: <ArchivedProjects />,
+        requiredRole: 3,
+      },
     ],
   },
   {
