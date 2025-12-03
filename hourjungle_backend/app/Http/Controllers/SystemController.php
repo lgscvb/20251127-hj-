@@ -9,18 +9,18 @@ use App\Models\SystemLog;
 use Illuminate\Http\Request;
 
 /**
- * �q-��6h
+ * 系統管理 Controller
  *
- * U�q-�Line Bot -��q�
+ * 處理系統設定、Line Bot 設定、系統日誌
  */
 class SystemController extends Controller
 {
     use ApiHelperTrait;
 
-    // ==================== �q-� ====================
+    // ==================== 系統設定 ====================
 
     /**
-     * r��q-�
+     * 獲取系統設定
      */
     public function getConfig()
     {
@@ -28,7 +28,7 @@ class SystemController extends Controller
             $config = Config::first();
 
             if (!$config) {
-                // ���	Mnu�؍Mn
+                // 如果沒有設定，建立預設設定
                 $config = Config::create([
                     'overdue_days' => 5,
                     'late_fee' => '3',
@@ -41,14 +41,14 @@ class SystemController extends Controller
                 ]);
             }
 
-            return $this->successResponse('r��', $config);
+            return $this->successResponse('獲取成功', $config);
         } catch (\Exception $e) {
-            return $this->errorResponse('r�1W' . $e->getMessage());
+            return $this->errorResponse('獲取失敗：' . $e->getMessage());
         }
     }
 
     /**
-     * ���q-�
+     * 更新系統設定
      */
     public function updateConfig(Request $request)
     {
@@ -64,43 +64,43 @@ class SystemController extends Controller
                 $config = new Config();
             }
 
-            // WIx�
+            // 驗證輸入
             if (isset($request->overdue_days) && $request->overdue_days < 0) {
-                return $this->errorResponse('>�)x��0');
+                return $this->errorResponse('逾期天數不能小於0');
             }
 
             if (isset($request->penalty_fee) && $request->penalty_fee < 0) {
-                return $this->errorResponse('U���0');
+                return $this->errorResponse('違約金不能小於0');
             }
 
             if (isset($request->late_fee) && $request->late_fee < 0) {
-                return $this->errorResponse('��(%)��0');
+                return $this->errorResponse('滯納金(%)不能小於0');
             }
 
-            // ��Mn
+            // 更新設定
             $config->fill($request->all());
             $config->save();
 
-            $systemlog_description = '[�9�q-�] >�)x:'.$request->overdue_days.' ��(%):'.$request->late_fee.' U�:'.$request->penalty_fee;
-            $this->createSystemLog($member->id, '�9', $systemlog_description, 'configs', $config->id, 'update');
+            $systemlog_description = '[修改系統設定] 逾期天數:'.$request->overdue_days.' 滯納金(%):'.$request->late_fee.' 違約金:'.$request->penalty_fee;
+            $this->createSystemLog($member->id, '修改', $systemlog_description, 'configs', $config->id, 'update');
 
-            return $this->successResponse('���');
+            return $this->successResponse('更新成功');
         } catch (\Exception $e) {
-            return $this->errorResponse('��1W' . $e->getMessage());
+            return $this->errorResponse('更新失敗：' . $e->getMessage());
         }
     }
 
-    // ==================== Line Bot -� ====================
+    // ==================== Line Bot 設定 ====================
 
     /**
-     * ֗Line Bot-�h
+     * 獲取 Line Bot 設定列表
      */
     public function getLineBotList(Request $request)
     {
         try {
             $lineBots = LineBot::with('branch')->get();
 
-            // �9ǙI��
+            // 轉換資料格式
             $lineBots->transform(function ($item) {
                 return [
                     'id' => $item->id,
@@ -114,14 +114,14 @@ class SystemController extends Controller
                 ];
             });
 
-            return $this->successResponse('r��', $lineBots);
+            return $this->successResponse('獲取成功', $lineBots);
         } catch (\Exception $e) {
-            return $this->errorResponse('r�1W' . $e->getMessage());
+            return $this->errorResponse('獲取失敗：' . $e->getMessage());
         }
     }
 
     /**
-     * �9Line Bot-�
+     * 更新 Line Bot 設定
      */
     public function updateLineBot(Request $request)
     {
@@ -133,24 +133,24 @@ class SystemController extends Controller
 
             $lineBot = LineBot::find($request->id);
             if (!$lineBot) {
-                return $this->errorResponse('Line Bot-�X(');
+                return $this->errorResponse('Line Bot 設定不存在');
             }
 
             $lineBot->update($request->all());
 
-            $systemlog_description = '[�9Line Bot-�] 4(:'.$lineBot->branch->name.' ;S�p:'.$lineBot->channel_secret.' ;SToken:'.$lineBot->channel_token.' ;SLiff ID:'.$lineBot->liff_id.' �>�:'.$lineBot->payment_notice.' ��:'.$lineBot->renewql_notice;
-            $this->createSystemLog($member->id, '�9', $systemlog_description, 'line_bots', $lineBot->id, 'update');
+            $systemlog_description = '[修改Line Bot設定] 分館:'.$lineBot->branch->name.' 頻道密鑰:'.$lineBot->channel_secret.' 頻道Token:'.$lineBot->channel_token.' 頻道Liff ID:'.$lineBot->liff_id.' 付款通知:'.$lineBot->payment_notice.' 續約通知:'.$lineBot->renewql_notice;
+            $this->createSystemLog($member->id, '修改', $systemlog_description, 'line_bots', $lineBot->id, 'update');
 
-            return $this->successResponse('�9�');
+            return $this->successResponse('更新成功');
         } catch (\Exception $e) {
-            return $this->errorResponse('�91W' . $e->getMessage());
+            return $this->errorResponse('更新失敗：' . $e->getMessage());
         }
     }
 
-    // ==================== �q� ====================
+    // ==================== 系統日誌 ====================
 
     /**
-     * ֗�qp�log
+     * 獲取系統日誌列表
      */
     public function getSystemLog(Request $request)
     {
@@ -230,7 +230,7 @@ class SystemController extends Controller
                 'data' => $systemLog
             ]);
         } catch (\Exception $e) {
-            return $this->errorResponse('r�1W' . $e->getMessage());
+            return $this->errorResponse('獲取失敗：' . $e->getMessage());
         }
     }
 }
