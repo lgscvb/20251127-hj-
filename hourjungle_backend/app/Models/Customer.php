@@ -27,6 +27,7 @@ class Customer extends Model
         'company_address',
         'company_phone_number',
         'company_fax_number',
+        'customer_type',
         'company_contact_person',
         'company_contact_person_phone_number',
         'company_contact_person_email',
