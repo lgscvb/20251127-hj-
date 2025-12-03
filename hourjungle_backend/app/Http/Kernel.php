@@ -61,6 +61,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'line.signature' => \App\Http\Middleware\LineSignature::class,
+        'brain.api' => \App\Http\Middleware\BrainApiKeyMiddleware::class,
     ];
 
     protected $middlewarePriority = [

@@ -117,7 +117,7 @@ Route::prefix('bills')->group(function () {
 // ===== Brain AI 系統整合 =====
 use App\Http\Controllers\BrainIntegrationController;
 
-Route::prefix('brain')->group(function () {
+Route::prefix('brain')->middleware('brain.api')->group(function () {
     // 查詢客戶資料（by LINE userId）
     Route::get('/customer/{lineUserId}', [BrainIntegrationController::class, 'getCustomerByLineId']);
 

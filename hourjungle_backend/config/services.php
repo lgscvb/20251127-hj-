@@ -39,4 +39,8 @@ return [
         'channel_secret' => env('LINE_CHANNEL_SECRET'),
     ],
 
+    'brain' => [
+        'api_key' => env('BRAIN_API_KEY'),
+    ],
+
 ];
