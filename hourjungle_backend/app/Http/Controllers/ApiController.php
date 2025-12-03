@@ -2708,170 +2708,18 @@ class ApiController extends Controller
                 ]);
             }
 
-            // 獲取當前年月
-            $currentYear = date('Y');
-            $currentMonth = date('m');
+            // 使用快取 (每 30 分鐘更新一次)
+            $cacheKey = 'dashboard_' . ($member->is_top_account ? 'all' : $member->branch_id);
+            $cacheTTL = 30 * 60; // 30 分鐘
 
-            // 初始化圖表數據陣列
-            $charts = [
-                'month' => [],
-                'receivable' => [], // 應收款項
-                'receipt' => [], // 實收款項
-                'unpaid' => [] // 未收款項
-            ];
-
-            //累算未收款項
-            $unpaid = 0;
-
-            // 查詢條件
-            $query = Project::query();
-            if (!$member->is_top_account) {
-                $query->where('branch_id', $member->branch_id);
-            }
-
-            // 循環過去12個月
-            for ($i = 0; $i < 12; $i++) {
-                // 計算月份和年份
-                $month = $currentMonth - $i;
-                $year = $currentYear;
-                if ($month <= 0) {
-                    $month += 12;
-                    $year--;
-                }
-
-                // 格式化日期
-                $startDate = sprintf('%d-%02d-01', $year, $month);
-                $endDate = date('Y-m-t', strtotime($startDate));
-
-                // 查詢該月應收款項
-                $receivable = $query->clone()
-                ->where(function($q) use ($startDate, $endDate) {
-                    $q->where(function($subQ) use ($startDate, $endDate) {
-                        // 檢查合約期間是否與該月重疊
-                        $subQ->where('start_day', '<=', $endDate)
-                            ->where('end_day', '>=', $startDate);
-                    });
-                })
-                ->get()
-                ->sum(function($project) use ($startDate, $endDate) {
-                    // 判斷該月是否需要付款
-                    $next_pay_day = date('Y-m-d', strtotime($project->start_day));
-                    $target_month = date('Y-m', strtotime($startDate));
-                    
-                    while(strtotime($next_pay_day) <= strtotime($endDate)) {
-                        if(date('Y-m', strtotime($next_pay_day)) == $target_month) {
-                            // 根據付款週期返回應收金額
-                            return $project->current_payment;
-                        }
-                        
-                        // 根據付款週期計算下次付款日
-                        switch($project->payment_period) {
-                            case 1: // 月繳
-                                $next_pay_day = date('Y-m-d', strtotime($next_pay_day . ' +1 month'));
-                                break;
-                            case 2: // 季繳
-                                $next_pay_day = date('Y-m-d', strtotime($next_pay_day . ' +3 month'));
-                                break;
-                            case 3: // 半年繳
-                                $next_pay_day = date('Y-m-d', strtotime($next_pay_day . ' +6 month'));
-                                break;
-                            case 4: // 年繳
-                                $next_pay_day = date('Y-m-d', strtotime($next_pay_day . ' +12 month'));
-                                break;
-                        }
-                    }
-                    return 0; // 該月無需付款
-                });
-
-                // 查詢該月實收款項
-                $receipt = PaymentHistory::whereHas('project', function($q) use($query) {
-                    $q->whereIn('id', $query->clone()->select('id'));
-                })
-                ->whereBetween('pay_day', [$startDate, $endDate])
-                ->sum('amount');
-
-                // 計算未收款項
-                $unpaid = $query->clone()
-                ->where(function($q) use ($endDate) {
-                    $q->where(function($subQ) use ($endDate) {
-                        $subQ->where('next_pay_day', '<=', $endDate);
-                    });
-                })
-                ->get()
-                ->sum('current_payment');
-
-                // 添加到圖表數據中
-                array_unshift($charts['month'], date('M', strtotime($year . '-' . $month . '-01')));
-                array_unshift($charts['receivable'], round($receivable));
-                array_unshift($charts['receipt'], round($receipt));
-                array_unshift($charts['unpaid'], round($unpaid));
-            }
-
-            // 計算本月應收和實收
-            $this_month_start = date('Y-m-01');
-            $this_month_end = date('Y-m-t');
-            
-            $this_month_receivable = (int)$query->clone()
-                ->whereBetween('next_pay_day', [$this_month_start, $this_month_end])
-                ->sum('current_payment');
-
-            $this_month_receipt = (int)PaymentHistory::whereHas('project', function($q) use($query) {
-                $q->whereIn('id', $query->clone()->select('id'));
-            })
-            ->whereBetween('pay_day', [$this_month_start, $this_month_end])
-            ->sum('amount');
-
-            $this_month_unpaid = $this_month_receivable - $this_month_receipt;
-
-            // 計算本年應收和實收
-            $this_year_start = date('Y-01-01');
-            $this_year_end = date('Y-12-31');
-            
-            $this_year_receivable = (int)$query->clone()
-            ->where(function($q) use ($this_year_start, $this_year_end) {
-                $q->whereBetween('next_pay_day', [$this_year_start, $this_year_end])
-                    ->orWhereBetween('start_day', [$this_year_start, $this_year_end])
-                    ->orWhereBetween('end_day', [$this_year_start, $this_year_end]);
-            })
-            ->get()
-            ->sum(function($project) use ($this_year_start, $this_year_end) {
-                // 計算該年度內的實際月數
-                $start = max($project->start_day, $this_year_start);
-                $end = min($project->end_day, $this_year_end);
-                
-                // 計算實際月數（包含開始月和結束月）
-                $start_month = date('n', strtotime($start));
-                $end_month = date('n', strtotime($end));
-                
-                // 根據付款方案計算年度內的付款次數
-                $months = $end_month - $start_month + 1;
-                switch($project->payment_period) {
-                    case 1: // 月繳
-                        $payments = $months;
-                        break;
-                    case 2: // 季繳
-                        $payments = ceil($months / 3);
-                        break;
-                    case 3: // 半年繳
-                        $payments = ceil($months / 6);
-                        break;
-                    case 4: // 年繳
-                        $payments = ceil($months / 12);
-                        break;
-                    default:
-                        $payments = 0;
-                }
-                
-                return $project->current_payment * $payments;
+            $data = \Cache::remember($cacheKey, $cacheTTL, function () use ($member) {
+                return $this->calculateDashboardData($member);
             });
 
-            $this_year_receipt = (int)PaymentHistory::whereHas('project', function($q) use($query) {
-                $q->whereIn('id', $query->clone()->select('id'));
-            })
-            ->whereBetween('pay_day', [$this_year_start, $this_year_end])
-            ->sum('amount');
-
-            $this_year_unpaid = $this_year_receivable - $this_year_receipt;
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -2879,21 +2727,230 @@ class ApiController extends Controller
                 'message' => '獲取資料失敗：' . $e->getMessage()
             ]);
         }
+    }
 
-        
+    /**
+     * 計算 Dashboard 數據（優化版本）
+     * 只執行 2 次資料庫查詢，其餘在 PHP 內計算
+     */
+    private function calculateDashboardData($member)
+    {
+        $currentYear = (int)date('Y');
+        $currentMonth = (int)date('m');
 
-        return response()->json([
-            'status' => true,
-            'data' => [
-                'charts' => $charts,
-                'this_month_receivable' => $this_month_receivable,
-                'this_month_receipt' => $this_month_receipt,
-                'this_month_unpaid' => $this_month_unpaid,
-                'this_year_receivable' => $this_year_receivable,
-                'this_year_receipt' => $this_year_receipt,
-                'this_year_unpaid' => $this_year_unpaid,
-            ]
-        ]);
+        // ========== 只查詢 2 次資料庫 ==========
+
+        // 查詢 1：一次性載入所有相關 Projects
+        $projectQuery = Project::query();
+        if (!$member->is_top_account) {
+            $projectQuery->where('branch_id', $member->branch_id);
+        }
+        $projects = $projectQuery->get();
+        $projectIds = $projects->pluck('id')->toArray();
+
+        // 查詢 2：一次性載入過去 12 個月的 PaymentHistory
+        $twelveMonthsAgo = date('Y-m-01', strtotime('-11 months'));
+        $payments = PaymentHistory::whereIn('project_id', $projectIds)
+            ->where('pay_day', '>=', $twelveMonthsAgo)
+            ->get()
+            ->groupBy(function($payment) {
+                return date('Y-m', strtotime($payment->pay_day));
+            });
+
+        // ========== PHP 內計算 ==========
+
+        $charts = [
+            'month' => [],
+            'receivable' => [],
+            'receipt' => [],
+            'unpaid' => []
+        ];
+
+        // 計算過去 12 個月的數據
+        for ($i = 11; $i >= 0; $i--) {
+            $targetDate = strtotime("-{$i} months");
+            $year = (int)date('Y', $targetDate);
+            $month = (int)date('m', $targetDate);
+            $monthKey = sprintf('%d-%02d', $year, $month);
+            $startDate = "{$monthKey}-01";
+            $endDate = date('Y-m-t', strtotime($startDate));
+
+            // 計算該月應收款項
+            $receivable = 0;
+            foreach ($projects as $project) {
+                if ($this->shouldPayInMonth($project, $startDate, $endDate)) {
+                    $receivable += $project->current_payment;
+                }
+            }
+
+            // 計算該月實收款項
+            $receipt = 0;
+            if (isset($payments[$monthKey])) {
+                $receipt = $payments[$monthKey]->sum('amount');
+            }
+
+            // 計算未收款項（截至該月底）
+            $unpaid = 0;
+            foreach ($projects as $project) {
+                if ($project->next_pay_day && strtotime($project->next_pay_day) <= strtotime($endDate)) {
+                    $unpaid += $project->current_payment;
+                }
+            }
+
+            $charts['month'][] = date('M', strtotime($startDate));
+            $charts['receivable'][] = round($receivable);
+            $charts['receipt'][] = round($receipt);
+            $charts['unpaid'][] = round($unpaid);
+        }
+
+        // 計算本月統計
+        $thisMonthStart = date('Y-m-01');
+        $thisMonthEnd = date('Y-m-t');
+        $thisMonthKey = date('Y-m');
+
+        $this_month_receivable = $projects->filter(function($p) use ($thisMonthStart, $thisMonthEnd) {
+            return $p->next_pay_day >= $thisMonthStart && $p->next_pay_day <= $thisMonthEnd;
+        })->sum('current_payment');
+
+        $this_month_receipt = isset($payments[$thisMonthKey])
+            ? $payments[$thisMonthKey]->sum('amount')
+            : 0;
+
+        // 計算本年統計
+        $thisYearStart = date('Y-01-01');
+        $thisYearEnd = date('Y-12-31');
+
+        $this_year_receivable = 0;
+        foreach ($projects as $project) {
+            $this_year_receivable += $this->calculateYearlyReceivable($project, $thisYearStart, $thisYearEnd);
+        }
+
+        $this_year_receipt = 0;
+        foreach ($payments as $monthPayments) {
+            foreach ($monthPayments as $payment) {
+                if ($payment->pay_day >= $thisYearStart && $payment->pay_day <= $thisYearEnd) {
+                    $this_year_receipt += $payment->amount;
+                }
+            }
+        }
+
+        return [
+            'charts' => $charts,
+            'this_month_receivable' => (int)$this_month_receivable,
+            'this_month_receipt' => (int)$this_month_receipt,
+            'this_month_unpaid' => (int)($this_month_receivable - $this_month_receipt),
+            'this_year_receivable' => (int)$this_year_receivable,
+            'this_year_receipt' => (int)$this_year_receipt,
+            'this_year_unpaid' => (int)($this_year_receivable - $this_year_receipt),
+        ];
+    }
+
+    /**
+     * 判斷該專案在指定月份是否需要付款
+     */
+    private function shouldPayInMonth($project, $startDate, $endDate)
+    {
+        // 檢查合約期間是否與該月重疊
+        if ($project->start_day > $endDate || $project->end_day < $startDate) {
+            return false;
+        }
+
+        // 計算付款週期月數
+        $periodMonths = match((int)$project->payment_period) {
+            1 => 1,   // 月繳
+            2 => 3,   // 季繳
+            3 => 6,   // 半年繳
+            4 => 12,  // 年繳
+            default => 1
+        };
+
+        // 從合約開始日計算所有付款日
+        $payDay = strtotime($project->start_day);
+        $targetMonth = date('Y-m', strtotime($startDate));
+        $endTimestamp = strtotime($endDate);
+
+        while ($payDay <= $endTimestamp) {
+            if (date('Y-m', $payDay) === $targetMonth) {
+                return true;
+            }
+            $payDay = strtotime("+{$periodMonths} months", $payDay);
+        }
+
+        return false;
+    }
+
+    /**
+     * 計算專案的年度應收款項
+     */
+    private function calculateYearlyReceivable($project, $yearStart, $yearEnd)
+    {
+        // 檢查合約期間是否與該年重疊
+        if ($project->start_day > $yearEnd || $project->end_day < $yearStart) {
+            return 0;
+        }
+
+        // 計算實際重疊期間
+        $start = max($project->start_day, $yearStart);
+        $end = min($project->end_day, $yearEnd);
+
+        $startMonth = (int)date('n', strtotime($start));
+        $endMonth = (int)date('n', strtotime($end));
+        $months = $endMonth - $startMonth + 1;
+
+        // 根據付款方案計算年度內的付款次數
+        $payments = match((int)$project->payment_period) {
+            1 => $months,              // 月繳
+            2 => ceil($months / 3),    // 季繳
+            3 => ceil($months / 6),    // 半年繳
+            4 => ceil($months / 12),   // 年繳
+            default => 0
+        };
+
+        return $project->current_payment * $payments;
+    }
+
+    /**
+     * 清除 Dashboard 快取並重新計算
+     */
+    public function refreshDashboard(Request $request)
+    {
+        try {
+            $member = $this->isLogin();
+            if (is_null($member)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => '未登入'
+                ]);
+            }
+
+            // 清除所有 Dashboard 快取
+            \Cache::forget('dashboard_all');
+
+            // 清除各分館的快取
+            $branches = \App\Models\Branch::all();
+            foreach ($branches as $branch) {
+                \Cache::forget('dashboard_' . $branch->id);
+            }
+
+            // 重新計算當前用戶的 Dashboard
+            $data = $this->calculateDashboardData($member);
+
+            // 設置新快取
+            $cacheKey = 'dashboard_' . ($member->is_top_account ? 'all' : $member->branch_id);
+            \Cache::put($cacheKey, $data, 30 * 60);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Dashboard 已刷新',
+                'data' => $data
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => '刷新失敗：' . $e->getMessage()
+            ]);
+        }
     }
 
     //20250311

@@ -97,6 +97,7 @@ Route::get('/get-system-log', [SystemController::class, 'getSystemLog']);
 // ===== 其他功能（暫時保留在 ApiController） =====
 Route::post('/send-line-message', [ApiController::class, 'sendLineMessage']);
 Route::get('/dashboard', [ApiController::class, 'dashboard']);
+Route::post('/dashboard/refresh', [ApiController::class, 'refreshDashboard']); // 清除快取強制刷新
 
 // ===== LINE Bot Webhook =====
 Route::post('/webhook/{botId?}', [LineBotController::class, 'webhook'])->name('line.webhook');
