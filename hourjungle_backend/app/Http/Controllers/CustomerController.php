@@ -29,6 +29,15 @@ class CustomerController extends Controller
             $perPage = $request->get('per_page', 10);
             $keyword = $request->get('keyword');
             $branchId = $request->get('branch_id');
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+
+            // 驗證排序欄位
+            $allowedSortFields = ['name', 'number', 'company_name', 'created_at', 'branch_name'];
+            if (!in_array($sortBy, $allowedSortFields)) {
+                $sortBy = 'created_at';
+            }
+            $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
 
             $query = Customer::query()
                 ->leftJoin('branches', 'customers.branch_id', '=', 'branches.id')
@@ -50,12 +59,12 @@ class CustomerController extends Controller
                 });
             }
 
-            \Log::info('Customer query:', [
-                'sql' => $query->toSql(),
-                'bindings' => $query->getBindings(),
-                'branch_id' => $branchId,
-                'keyword' => $keyword
-            ]);
+            // 排序
+            if ($sortBy === 'branch_name') {
+                $query->orderBy('branches.name', $sortOrder);
+            } else {
+                $query->orderBy('customers.' . $sortBy, $sortOrder);
+            }
 
             $customers = $query->paginate($perPage);
 

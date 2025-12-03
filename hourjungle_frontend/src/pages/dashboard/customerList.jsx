@@ -88,11 +88,15 @@ export function CustomerList() {
         const savedPage = localStorage.getItem('customerListPage');
         return savedPage ? parseInt(savedPage) : 1;
     });
-    
+
     const [itemsPerPage, setItemsPerPage] = useState(() => {
         const savedItems = localStorage.getItem('customerListItemsPerPage');
         return savedItems ? parseInt(savedItems) : 10;
     });
+
+    // 排序相關 state
+    const [sortBy, setSortBy] = useState('created_at');
+    const [sortOrder, setSortOrder] = useState('desc');
 
     // 計算總頁數
     const totalPages = Math.ceil(authorsTableData.length / itemsPerPage);
@@ -585,9 +589,11 @@ export function CustomerList() {
         dispatch(fetchCustomers({
             page: currentPage,
             per_page: itemsPerPage,
-            keyword: searchKeyword
+            keyword: searchKeyword,
+            sort_by: sortBy,
+            sort_order: sortOrder
         }));
-    }, [dispatch, currentPage, itemsPerPage, searchKeyword, user.is_top_account]);
+    }, [dispatch, currentPage, itemsPerPage, searchKeyword, sortBy, sortOrder, user.is_top_account]);
 
     // 在組件頂部添加 state
     const [searchTimeout, setSearchTimeout] = useState(null);
@@ -596,22 +602,35 @@ export function CustomerList() {
     const handleSearch = (e) => {
         const keyword = e.target.value;
         setSearchKeyword(keyword);
-        
+
         // 使用 setTimeout 來實現防抖，避免頻繁請求
         if (searchTimeout) {
             clearTimeout(searchTimeout);
         }
-        
+
         const timeoutId = setTimeout(() => {
             dispatch(fetchCustomers({
                 page: 1, // 搜尋時重置到第一頁
                 per_page: pagination.per_page || 10,
                 keyword: keyword,
-                branch_id: selectedBranch // 添加分館ID参数
+                branch_id: selectedBranch,
+                sort_by: sortBy,
+                sort_order: sortOrder
             }));
         }, 500); // 500ms 的延遲
-        
+
         setSearchTimeout(timeoutId);
+    };
+
+    // 排序處理函數
+    const handleSortChange = (newSortBy) => {
+        if (newSortBy === sortBy) {
+            // 如果點擊相同欄位，切換排序方向
+            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortBy(newSortBy);
+            setSortOrder('asc');
+        }
     };
 
     // 添加分頁組件
@@ -806,14 +825,34 @@ export function CustomerList() {
                             <Option value="50">50 筆</Option>
                         </Select>
                     </div>
-                    <div className="flex justify-between items-center p-4">
+                    <div className="flex flex-wrap justify-between items-center p-4 gap-4">
                         <div className="w-full md:w-72">
-                            <Input 
-                                label="搜尋客戶" 
+                            <Input
+                                label="搜尋客戶"
                                 value={searchKeyword}
                                 onChange={handleSearch}
                                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                             />
+                        </div>
+                        <div className="w-full md:w-48">
+                            <Select
+                                label="排序方式"
+                                value={`${sortBy}-${sortOrder}`}
+                                onChange={(value) => {
+                                    const [field, order] = value.split('-');
+                                    setSortBy(field);
+                                    setSortOrder(order);
+                                }}
+                            >
+                                <Option value="created_at-desc">建立時間（新→舊）</Option>
+                                <Option value="created_at-asc">建立時間（舊→新）</Option>
+                                <Option value="name-asc">姓名（A→Z）</Option>
+                                <Option value="name-desc">姓名（Z→A）</Option>
+                                <Option value="number-asc">編號（小→大）</Option>
+                                <Option value="number-desc">編號（大→小）</Option>
+                                <Option value="company_name-asc">公司名稱（A→Z）</Option>
+                                <Option value="company_name-desc">公司名稱（Z→A）</Option>
+                            </Select>
                         </div>
                     </div>
                     {loading ? (
@@ -1621,21 +1660,6 @@ export function CustomerList() {
                     {error}
                 </div>
             )}
-            {checkUserPermission() ? (
-                // 正常渲染内容
-                <div>
-                    {/* 您的现有内容 */}
-                </div>
-            ) : (
-                // 未登录或无权限时显示的内容
-                <div className="text-center p-4">
-                    <Typography variant="h6" color="blue-gray">
-                        請先登入或確認您的權限
-                    </Typography>
-                </div>
-            )}
-
-          
         </div>
     );
 }
