@@ -890,6 +890,11 @@ export function CustomerList() {
                                                 狀態
                                             </Typography>
                                         </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[90px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                合約狀態
+                                            </Typography>
+                                        </th>
                                         <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
                                             <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                                                 建立時間
@@ -906,8 +911,8 @@ export function CustomerList() {
                                
                                     {loading ? (
                                         <tr >
-                                        <td colSpan="7" className="text-center py-4 flex justify-center items-center w-full">
-                                          
+                                        <td colSpan="8" className="text-center py-4 flex justify-center items-center w-full">
+
                                         </td>
                                     </tr>
                                     ) : customers.length > 0 ? (
@@ -939,6 +944,22 @@ export function CustomerList() {
                                                         variant="gradient"
                                                         color={customer.status ? "green" : "blue-gray"}
                                                         value={customer.status ? "啟用" : "禁用"}
+                                                        className="py-0.5 px-2 text-[11px] font-medium w-fit"
+                                                    />
+                                                </td>
+                                                <td className="py-3 px-3 w-[90px]">
+                                                    <Chip
+                                                        variant="gradient"
+                                                        color={
+                                                            customer.contract_status === 'active' ? "green" :
+                                                            customer.contract_status === 'expired' ? "red" :
+                                                            "gray"
+                                                        }
+                                                        value={
+                                                            customer.contract_status === 'active' ? "有效" :
+                                                            customer.contract_status === 'expired' ? "已過期" :
+                                                            "無合約"
+                                                        }
                                                         className="py-0.5 px-2 text-[11px] font-medium w-fit"
                                                     />
                                                 </td>
@@ -982,7 +1003,7 @@ export function CustomerList() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="text-center py-4">
+                                            <td colSpan="8" className="text-center py-4">
                                                 <Typography>尚無資料</Typography>
                                             </td>
                                         </tr>

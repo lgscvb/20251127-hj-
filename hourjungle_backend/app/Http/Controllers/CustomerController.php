@@ -31,6 +31,7 @@ class CustomerController extends Controller
             $branchId = $request->get('branch_id');
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
+            $contractStatus = $request->get('contract_status'); // 新增：合約狀態篩選
 
             // 驗證排序欄位
             $allowedSortFields = ['name', 'number', 'company_name', 'created_at', 'branch_name'];
@@ -74,7 +75,29 @@ class CustomerController extends Controller
                 'data' => $customers->items()
             ]);
 
-            $customers->getCollection()->transform(function ($customer) {
+            $today = now()->startOfDay();
+
+            $customers->getCollection()->transform(function ($customer) use ($today) {
+                // 檢查客戶的合約狀態
+                $hasActiveContract = \DB::table('projects')
+                    ->where('customer_id', $customer->id)
+                    ->where('status', 1)
+                    ->where('end_day', '>=', $today)
+                    ->exists();
+
+                $hasExpiredContract = \DB::table('projects')
+                    ->where('customer_id', $customer->id)
+                    ->where('end_day', '<', $today)
+                    ->exists();
+
+                // 判斷客戶合約狀態
+                $customerContractStatus = 'active'; // 預設為活躍
+                if (!$hasActiveContract && $hasExpiredContract) {
+                    $customerContractStatus = 'expired'; // 所有合約都已過期
+                } elseif (!$hasActiveContract && !$hasExpiredContract) {
+                    $customerContractStatus = 'no_contract'; // 沒有合約
+                }
+
                 return [
                     'id' => $customer->id,
                     'number' => $customer->number,
@@ -98,9 +121,22 @@ class CustomerController extends Controller
                     'branch_id' => $customer->branch_id,
                     'branch_name' => $customer->branch_name,
                     'status' => $customer->status,
+                    'contract_status' => $customerContractStatus, // 新增：客戶合約狀態
+                    'has_active_contract' => $hasActiveContract,
+                    'has_expired_contract' => $hasExpiredContract,
                     'created_at' => $customer->created_at->format('Y-m-d H:i:s')
                 ];
             });
+
+            // 根據合約狀態篩選（如果有指定）
+            if ($contractStatus) {
+                $filteredCustomers = $customers->getCollection()->filter(function ($customer) use ($contractStatus) {
+                    return $customer['contract_status'] === $contractStatus;
+                })->values();
+
+                // 更新分頁資訊
+                $customers->setCollection($filteredCustomers);
+            }
 
             return response()->json([
                 'status' => true,
