@@ -200,9 +200,8 @@ class PaymentHistorySeeder extends Seeder
                 continue;
             }
 
-            // 解析付款方式
-            $paymentMethod = $data['payment_method'] ?? '';
-            $payType = $this->mapPaymentMethod($paymentMethod);
+            // 解析付款方式（從備註欄判斷）
+            $payType = $this->detectPaymentType($data);
 
             // 建立繳費記錄
             PaymentHistory::create([
@@ -227,23 +226,26 @@ class PaymentHistorySeeder extends Seeder
     }
 
     /**
-     * 對應付款方式
+     * 從備註欄判斷付款方式
      */
-    private function mapPaymentMethod(string $method): string
+    private function detectPaymentType(array $data): string
     {
-        $method = trim($method);
+        // 檢查 line_memo 和 notes 欄位
+        $lineMemo = $data['line_memo'] ?? '';
+        $notes = $data['notes'] ?? '';
+        $combined = $lineMemo . ' ' . $notes;
 
         // 現金
-        if (str_contains($method, '現金')) {
+        if (str_contains($combined, '現金') || str_contains($combined, '收現')) {
             return 'cash';
         }
 
         // 信用卡
-        if (str_contains($method, '信用卡') || str_contains($method, '刷卡')) {
+        if (str_contains($combined, '信用卡') || str_contains($combined, '刷卡')) {
             return 'credit';
         }
 
-        // 預設轉帳（包含年繳、半年繳、月繳等）
+        // 預設轉帳
         return 'transfer';
     }
 }
