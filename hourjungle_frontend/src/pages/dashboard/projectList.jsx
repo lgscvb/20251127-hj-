@@ -35,7 +35,7 @@ import {
     EyeSlashIcon,
     DocumentTextIcon,
     CurrencyDollarIcon
-  } from "@heroicons/react/24/solid";
+} from "@heroicons/react/24/solid";
 import { useState, useEffect } from "react";
 import { ArrowRightIcon, ArrowLeftIcon, EyeIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,10 +45,7 @@ import { ProfileInfoCard, MessageCard } from "@/widgets/cards";
 import { PaymentHistoryModal } from "@/components/PaymentHistory/PaymentHistoryModal";
 import { usePermission } from '@/hooks/usePermission';
 import { isNearPayment, isOverdue, formatDate, formatDateTime } from '@/utils/dateUtils';
-// 添加 xlsx 引入
 import * as XLSX from 'xlsx';
-
-
 
 // 付款方案選項
 export const PAYMENT_PLANS = [
@@ -117,12 +114,12 @@ const initialProjectData = {
 // 修改判斷日期的函數
 const getRowStyle = (nextPayDay, endDay) => {
     const today = new Date();
-    
+
     // 檢查合約到期日
     if (endDay) {
         const contractEndDate = new Date(endDay);
         const contractDiffDays = Math.ceil((contractEndDate - today) / (1000 * 60 * 60 * 24));
-        
+
         // 合約已過期
         if (contractDiffDays < 0) {
             return 'bg-gray-100'; // 灰色
@@ -137,7 +134,7 @@ const getRowStyle = (nextPayDay, endDay) => {
     if (nextPayDay) {
         const payDate = new Date(nextPayDay);
         const payDiffDays = Math.ceil((payDate - today) / (1000 * 60 * 60 * 24));
-        
+
         // 付款已逾期
         if (payDiffDays < 0) {
             return 'bg-red-50';
@@ -147,7 +144,7 @@ const getRowStyle = (nextPayDay, endDay) => {
             return 'bg-amber-50';
         }
     }
-    
+
     return '';
 };
 
@@ -158,12 +155,12 @@ const calculateDates = (startDate, paymentPlan, contractType, paymentDay) => {
     // 使用 YYYY-MM-DD 格式處理日期
     const start = new Date(startDate + 'T00:00:00');
     const paymentDayNum = start.getDate();
-    
+
     // 計算下次繳費日
     let nextPayment = new Date(start);
     const monthsToAdd = PAYMENT_PLANS.find(p => p.value === paymentPlan)?.months || 1;
     nextPayment.setMonth(nextPayment.getMonth() + monthsToAdd);
-    
+
     // 處理月底日期問題
     const lastDayOfMonth = new Date(nextPayment.getFullYear(), nextPayment.getMonth() + 1, 0).getDate();
     nextPayment.setDate(Math.min(paymentDayNum, lastDayOfMonth));
@@ -224,18 +221,18 @@ export function ProjectList() {
     const { list: businessItems } = useSelector(state => state.businessItems);
     const { list: lineBots } = useSelector(state => state.lineBot);
     const user = useSelector(state => state.auth.user);
-    
+
     // 從 Redux store 獲取專案列表數據
     const { list: projects, loading, error: projectsError, pagination } = useSelector(state => {
         console.log('專案列表狀態:', state.projects);
         return state.projects;
     });
     const { hasPermission, isTopAccount } = usePermission();
-    
+
     // 分頁相關 state
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
-    
+
     // 修改分頁相關邏輯
     const totalPages = Math.ceil(pagination.total / pagination.per_page);
 
@@ -268,10 +265,10 @@ export function ProjectList() {
     const [selectedPriceOption, setSelectedPriceOption] = useState(''); // 選擇的價格選項
 
     // 在組件頂部準備數據
-    const projectNames = useMemo(() => 
+    const projectNames = useMemo(() =>
         Array.from(new Set(projects.map(project => project.projectName)))
             .filter(Boolean)
-    , [projects]);
+        , [projects]);
 
     // 處理頁碼變更
     const handlePageChange = (page) => {
@@ -291,7 +288,7 @@ export function ProjectList() {
             console.log('查看專案 ID:', projectId);
             const result = await dispatch(getProjectInfo(projectId));
             console.log('查看專案結果:', result);
-            
+
             if (result.success) {
                 // 確保所有欄位與後端完全匹配
                 setProjectData({
@@ -342,7 +339,7 @@ export function ProjectList() {
             console.log('編輯專案 ID:', projectId);
             const result = await dispatch(getProjectInfo(projectId));
             console.log('編輯專案結果:', result);
-            
+
             if (result.success) {
                 // 計算總期數
                 const totalPeriods = calculateTotalPeriods(
@@ -409,7 +406,7 @@ export function ProjectList() {
             setProjectData(prev => {
                 // 計算期數
                 const totalPeriods = calculateTotalPeriods(prev.payment_period, prev.contractType);
-                
+
                 // 計算當期款項
                 const currentPayment = calculateCurrentPayment(selectedItem.price, prev.payment_period);
 
@@ -431,10 +428,10 @@ export function ProjectList() {
         setProjectData(prev => {
             // 計算新的期數
             const newTotalPeriods = calculateTotalPeriods(value, prev.contractType);
-            
+
             // 計算新的當期款項
             const newCurrentPayment = calculateCurrentPayment(prev.original_price, value);
-            
+
             // 重新計算下次繳費日
             const dates = calculateDates(
                 prev.start_day,
@@ -521,7 +518,7 @@ export function ProjectList() {
             }
 
             const project = result.data;  // 後端返回的完整數據
-            
+
             // 檢查合約狀態
             if (project.status === CONTRACT_STATUS.TERMINATED) {
                 alert('此合約已終止，無法生成合約文件');
@@ -547,7 +544,7 @@ export function ProjectList() {
 
             // 格式化日期（去除時間部分）
             const formattedDate = project.signing_day.split('T')[0].replace(/-/g, '');
-            
+
             // 準備合約所需數據，完全匹配後端資料結構
             const contractData = {
                 id: project.id,
@@ -582,13 +579,13 @@ export function ProjectList() {
             };
 
             console.log('準備生成合約，合約資訊:', contractData);
-            
+
             // 生成合約 URL
             const contractUrl = `${window.location.origin}/auth/contract/${project.customer_id}/${formattedDate}/${project.id}`;
-            
+
             // 在新分頁中打開合約頁面
             const contractWindow = window.open(contractUrl, '_blank');
-            
+
             // 傳遞合約數據到新窗口
             if (contractWindow) {
                 contractWindow.contractData = contractData;
@@ -627,10 +624,10 @@ export function ProjectList() {
             // 獲取關聯資料的名稱
             const customer = customers.find(c => c.id.toString() === projectData.customer_id.toString());
             const businessItem = businessItems.find(b => b.id.toString() === projectData.business_item_id.toString());
-            
+
             // 格式化日期（去除時間部分）
             const formattedDate = projectData.signing_day.split('T')[0].replace(/-/g, '');
-            
+
             // 準備預覽數據
             const previewData = {
                 ...projectData,
@@ -647,10 +644,10 @@ export function ProjectList() {
 
             // 生成預覽 URL
             const previewUrl = `${window.location.origin}/dashboard/contract/${projectData.customer_id}/${formattedDate}/preview`;
-            
+
             // 在新分頁中打開預覽頁面
             const previewWindow = window.open(previewUrl, '_blank');
-            
+
             // 傳遞預覽數據到新窗口
             if (previewWindow) {
                 previewWindow.contractData = previewData;
@@ -666,7 +663,7 @@ export function ProjectList() {
     const handleOpenAdd = (open) => {
         if (open) {
             // 開啟新增對話框時，重置表單數據為初始狀態
-            setProjectData({...initialProjectData});
+            setProjectData({ ...initialProjectData });
             setIsManualPrice(false);  // 重置手動輸入狀態
             setSelectedPriceOption('');  // 重置價格選項
         }
@@ -736,7 +733,7 @@ export function ProjectList() {
 
             console.log('送出的數據:', submitData);
 
-            const result = projectData.id 
+            const result = projectData.id
                 ? await dispatch(updateProject({ ...submitData, id: projectData.id }))
                 : await dispatch(createProject(submitData));
 
@@ -771,7 +768,7 @@ export function ProjectList() {
     const handleCancel = () => {
         if (viewMode === 'edit') {
             // 如果是編輯模式，重置數據並關閉
-            setProjectData({...initialProjectData});
+            setProjectData({ ...initialProjectData });
             setDetailOpen(false);
         } else {
             // 如果是查看模式，直接關閉
@@ -850,7 +847,7 @@ export function ProjectList() {
                 }));
                 console.log('專案列表數據:', response);
             };
-            
+
             fetchData();
 
         } catch (error) {
@@ -869,8 +866,8 @@ export function ProjectList() {
                 return "amber";
             case CONTRACT_STATUS.TERMINATED:
                 return "red";
-                case CONTRACT_STATUS.CHECKING:
-                    return "yellow";
+            case CONTRACT_STATUS.CHECKING:
+                return "yellow";
             default:
                 return "blue-gray";
         }
@@ -894,12 +891,12 @@ export function ProjectList() {
     // 修改 getFilteredProjects 函數
     const getFilteredProjects = () => {
         console.log('開始過濾專案，當前搜尋參數:', searchParams);
-        
+
         const filtered = projects.filter(project => {
             // 如果有關鍵字，檢查所有相關欄位
             if (searchParams.keyword) {
                 const keyword = searchParams.keyword.toLowerCase();
-                
+
                 // 先找到對應的付款方案和合約類型文字
                 const paymentPlanLabel = project.payment_period || '';  // 直接使用後端傳來的文字
                 const contractTypeLabel = CONTRACT_TYPES.find(t => t.value === project.contractType)?.label || '';
@@ -921,41 +918,41 @@ export function ProjectList() {
                 ];
 
                 // 如果沒有任何欄位包含關鍵字，返回 false
-                if (!searchableFields.some(field => 
+                if (!searchableFields.some(field =>
                     field && field.toString().toLowerCase().includes(keyword)
                 )) {
                     return false;
                 }
             }
-            
+
             // 其他現有的過濾條件
-            if (searchParams.projectName && 
+            if (searchParams.projectName &&
                 !project.projectName.toLowerCase().includes(searchParams.projectName.toLowerCase())) {
                 return false;
             }
-            
-            if (searchParams.customer_id && 
+
+            if (searchParams.customer_id &&
                 project.customer_id.toString() !== searchParams.customer_id) {
                 return false;
             }
-            
-            if (searchParams.start_day && 
+
+            if (searchParams.start_day &&
                 project.start_day.split('T')[0] !== searchParams.start_day) {
                 return false;
             }
-            
-            if (searchParams.next_pay_day && 
+
+            if (searchParams.next_pay_day &&
                 project.next_pay_day.split('T')[0] !== searchParams.next_pay_day) {
                 return false;
             }
-            
+
             if (searchParams.status !== '') {
                 return project.status.toString() === searchParams.status;
             }
-            
+
             return true;
         });
-        
+
         console.log('過濾後的專案數量:', filtered.length);
         return filtered;
     };
@@ -964,9 +961,9 @@ export function ProjectList() {
     const handleSearchParamsChange = (newParams) => {
         console.log('正在更新搜尋參數');
         console.log('新的參數值:', newParams);
-        
+
         setSearchParams(newParams);
-        
+
         // 立即驗證更新後的值
         console.log('更新後的 searchParams:', newParams);
     };
@@ -996,17 +993,17 @@ export function ProjectList() {
             if (result.success) {
                 // 設置專案 ID
                 setSelectedProjectId(projectId);
-                
+
                 // 處理專案資料
                 const formattedProjectData = {
                     ...result.data,
                     payment_period: parseInt(result.data.payment_period), // 確保轉換為數字
                     contractType: result.data.contractType
                 };
-                
+
                 // 開啟 Modal 並傳遞處理過的資料
                 setPaymentHistoryOpen(true);
-                
+
                 // 將處理過的資料傳遞給 PaymentHistoryModal
                 return formattedProjectData;
             } else {
@@ -1043,7 +1040,7 @@ export function ProjectList() {
 
             // 根據通知類型選擇對應的模板
             const template = type === 'payment' ? lineBot.payment_notice : lineBot.renewql_notice;
-            
+
             // 檢查是否有設置通知模板
             if (!template) {
                 alert(`尚未設置${type === 'payment' ? '付款' : '續約'}通知訊息模板，請先在系統設定中設置`);
@@ -1167,53 +1164,53 @@ export function ProjectList() {
     return (
         <div className="mt-12 mb-8 flex flex-col gap-12">
             {hasPermission('專案匯入') && (
-            <Card>
-                <CardHeader variant="gradient" color="white" className="mb-8 p-6">
-                    <Typography variant="h6" color="black" className="mb-4">
-                        匯入/ 匯出專案
-                    </Typography>
-                    <div className="flex gap-4 items-center">
-                        <input
-                            type="file"
-                            accept=".xlsx,.xls"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            id="fileInput"
-                        />
-                        <label htmlFor="fileInput">
-                            <Button 
-                                variant="gradient" 
-                                color="blue" 
+                <Card>
+                    <CardHeader variant="gradient" color="white" className="mb-8 p-6">
+                        <Typography variant="h6" color="black" className="mb-4">
+                            匯入/ 匯出專案
+                        </Typography>
+                        <div className="flex gap-4 items-center">
+                            <input
+                                type="file"
+                                accept=".xlsx,.xls"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="fileInput"
+                            />
+                            <label htmlFor="fileInput">
+                                <Button
+                                    variant="gradient"
+                                    color="blue"
+                                    className="flex items-center gap-2 px-3"
+                                    onClick={() => document.getElementById('fileInput').click()}
+                                >
+                                    匯入專案
+                                </Button>
+                            </label>
+                            {selectedFile && (
+                                <Typography variant="small" className="text-black">
+                                    已選擇: {selectedFile.name}
+                                </Typography>
+                            )}
+
+                            <Button
+                                variant="gradient"
                                 className="flex items-center gap-2 px-3"
-                                onClick={() => document.getElementById('fileInput').click()}
+                                onClick={handleExportExcel}
                             >
-                                匯入專案
+                                匯出專案
                             </Button>
-                        </label>
-                        {selectedFile && (
-                            <Typography variant="small" className="text-black">
-                                已選擇: {selectedFile.name}
-                            </Typography>
-                        )}
-                        
-                        <Button
-                            variant="gradient"
-                            className="flex items-center gap-2 px-3"
-                            onClick={handleExportExcel}
-                        >
-                            匯出專案
-                        </Button>
-                        <Button
-                            variant="gradient"
-                            color="green"
-                            className="flex items-center gap-2 px-3"
-                            onClick={handleDownloadTemplate}
-                        >
-                            範例下載
-                        </Button>
-                    </div>
-                </CardHeader>
-            </Card>
+                            <Button
+                                variant="gradient"
+                                color="green"
+                                className="flex items-center gap-2 px-3"
+                                onClick={handleDownloadTemplate}
+                            >
+                                範例下載
+                            </Button>
+                        </div>
+                    </CardHeader>
+                </Card>
             )}
             <Card>
                 <CardHeader variant="gradient" color="white" className="mb-2 p-6 flex justify-between">
@@ -1221,13 +1218,13 @@ export function ProjectList() {
                         專案列表
                     </Typography>
                     {hasPermission('新增專案') && (
-                    <Button
-                        requiredPermission="create_project"
-                        variant="gradient"
-                        color="green"
-                        onClick={() => handleOpenAdd(true)}
-                    >
-                        新增專案
+                        <Button
+                            requiredPermission="create_project"
+                            variant="gradient"
+                            color="green"
+                            onClick={() => handleOpenAdd(true)}
+                        >
+                            新增專案
                         </Button>
                     )}
                 </CardHeader>
@@ -1254,8 +1251,8 @@ export function ProjectList() {
                                 >
                                     <Option value="">全部</Option>
                                     {projectNames.map((projectName, index) => (
-                                        <Option 
-                                            key={projectName} 
+                                        <Option
+                                            key={projectName}
                                             value={index.toString()}
                                         >
                                             {projectName}
@@ -1268,9 +1265,9 @@ export function ProjectList() {
                                     label="選擇客戶"
                                     value={selectedCustomerId}
                                     selected={(element) => {
-                                        return selectedCustomerId === "" ? "全部" : 
-                                            customers.find(c => c.id.toString() === selectedCustomerId)?.company_name || 
-                                            customers.find(c => c.id.toString() === selectedCustomerId)?.name || 
+                                        return selectedCustomerId === "" ? "全部" :
+                                            customers.find(c => c.id.toString() === selectedCustomerId)?.company_name ||
+                                            customers.find(c => c.id.toString() === selectedCustomerId)?.name ||
                                             "全部";
                                     }}
                                     onChange={(value) => {
@@ -1285,8 +1282,8 @@ export function ProjectList() {
                                 >
                                     <Option value="">全部</Option>
                                     {customers.map((customer) => (
-                                        <Option 
-                                            key={customer.id} 
+                                        <Option
+                                            key={customer.id}
                                             value={customer.id.toString()}
                                         >
                                             {customer.company_name || customer.name}
@@ -1310,7 +1307,7 @@ export function ProjectList() {
                                     <Option value="3">已終止</Option>
                                 </Select>
                             </div>
-                            
+
                             <div className="w-72">
                                 <Input
                                     type="date"
@@ -1381,14 +1378,22 @@ export function ProjectList() {
                                     </tr>
                                 ) : getFilteredProjects().length > 0 ? (
                                     getFilteredProjects().map((project, index) => (
-                                        <tr 
+                                        <tr
                                             key={project.id}
                                             className={`${getRowStyle(project.next_pay_day, project.end_day)} hover:bg-blue-gray-50/50 transition-colors`}
                                         >
-                                            <td className="py-3 px-5 max-w-[150px]">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell truncate">
-                                                    {project.projectName}
-                                                </Typography>
+                                            <td className="py-3 px-5">
+                                                <div className="flex items-center gap-2">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 min-w-[150px] ell">
+                                                        {project.projectName}
+                                                    </Typography>
+                                                    <Chip
+                                                        variant="gradient"
+                                                        color={isOverdue(project.next_pay_day) ? "red" : "amber"}
+                                                        value={isOverdue(project.next_pay_day) ? "已逾期" : "即將到期"}
+                                                        className={`py-0.5 px-2 text-[11px] font-medium ${getRowStyle(project.next_pay_day, project.end_day).includes('bg-red-50') || getRowStyle(project.next_pay_day, project.end_day).includes('bg-amber-50') ? '' : 'hidden'}`}
+                                                    />
+                                                </div>
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
@@ -1401,13 +1406,21 @@ export function ProjectList() {
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                  {PAYMENT_PLANS.find(t => t.value === parseInt(project.payment_period))?.label || '-'}
+                                                <Typography className="text-xs font-semibold text-blue-gray-600 ell">
+                                                    {(() => {
+                                                        const val = Number(project.payment_period);
+                                                        const found = PAYMENT_PLANS.find(t => t.value === val);
+                                                        return found?.label || '-';
+                                                    })()}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {CONTRACT_TYPES.find(t => t.value === String(project.contractType))?.label || '-'}
+                                                <Typography className="text-xs font-semibold text-blue-gray-600 ell">
+                                                    {(() => {
+                                                        const val = String(project.contractType || '');
+                                                        const found = CONTRACT_TYPES.find(t => t.value === val);
+                                                        return found?.label || '-';
+                                                    })()}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
@@ -1416,34 +1429,14 @@ export function ProjectList() {
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {formatDate(project.next_pay_day)}
-                                                </Typography>
-                                            </td>
-                                            <td className="py-3 px-5">
-                                                <Typography variant="small" className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {formatDate(project.end_day)}
-                                                </Typography>
-                                            </td>
-                                            <td className="py-3 px-5">
-                                                <Chip
-                                                    variant="gradient"
-                                                    color={getStatusColor(project.contract_status)}
-                                                    value={getStatusText(project.contract_status)}
-                                                    className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                                                />
-                                            </td>
-                                            <td className="py-3 px-5">
                                                 <div className="flex items-center gap-2">
-                                                    {hasPermission('查看專案') && (
-                                                        <IconButton
-                                                            variant="text"
-                                                            color="blue"
-                                                            onClick={() => handleView(project.id)}
-                                                        >
-                                                            <EyeIcon className="h-4 w-4" />
-                                                        </IconButton>
-                                                    )}
+                                                    <IconButton
+                                                        variant="text"
+                                                        color="blue-gray"
+                                                        onClick={() => handleView(project.id)}
+                                                    >
+                                                        <EyeIcon className="h-4 w-4" />
+                                                    </IconButton>
                                                     {hasPermission('編輯專案') && (
                                                         <IconButton
                                                             variant="text"
@@ -1482,7 +1475,6 @@ export function ProjectList() {
                                                             <CurrencyDollarIcon className="h-4 w-4" />
                                                         </IconButton>
                                                     )}
-                                                    {/* 通知按鈕 - 根據下次繳費日判斷顯示 */}
                                                     {(isNearPayment(project.next_pay_day) || isOverdue(project.next_pay_day)) && (
                                                         <IconButton
                                                             variant="text"
@@ -1492,7 +1484,6 @@ export function ProjectList() {
                                                             <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
                                                         </IconButton>
                                                     )}
-                                                    {/* 續約通知按鈕 */}
                                                     <Tooltip content="發送續約通知">
                                                         <IconButton
                                                             variant="text"
@@ -1502,8 +1493,6 @@ export function ProjectList() {
                                                             <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
                                                         </IconButton>
                                                     </Tooltip>
-                                                    
-                                                    {/* 添加查看合約按鈕 */}
                                                     {project.contract_path && (
                                                         <Tooltip content="查看合約">
                                                             <IconButton
@@ -1530,7 +1519,6 @@ export function ProjectList() {
                         </table>
                     </div>
 
-                    {/* 分頁區域 */}
                     <div className="flex justify-center p-4">
                         <div className="flex items-center gap-4">
                             <Button
@@ -1556,7 +1544,7 @@ export function ProjectList() {
                     </div>
                 </CardBody>
             </Card>
-            
+
             {/* 新增客戶彈窗 */}
             <Dialog open={openAdd} handler={handleOpenAdd} size="xl">
                 <DialogHeader>新增專案</DialogHeader>
@@ -1567,13 +1555,13 @@ export function ProjectList() {
                             <Input
                                 label="專案名稱"
                                 value={projectData.projectName}
-                                onChange={(e) => setProjectData({...projectData, projectName: e.target.value})}
+                                onChange={(e) => setProjectData({ ...projectData, projectName: e.target.value })}
                                 required
                             />
                         </div>
 
                         {/* 客戶和商務項目 */}
-                        <Select label="選擇客戶" value={projectData.customer_id} onChange={(value) => setProjectData({...projectData, customer_id: value})} required>
+                        <Select label="選擇客戶" value={projectData.customer_id} onChange={(value) => setProjectData({ ...projectData, customer_id: value })} required>
                             {customers.map((customer) => (
                                 <Option key={customer.id} value={customer.id.toString()}>
                                     {customer.company_name || customer.name}
@@ -1619,28 +1607,28 @@ export function ProjectList() {
                             type="date"
                             label="簽約日"
                             value={projectData.signing_day}
-                            onChange={(e) => setProjectData({...projectData, signing_day: e.target.value})}
+                            onChange={(e) => setProjectData({ ...projectData, signing_day: e.target.value })}
                         />
 
                         <Input
                             type="number"
                             label="約定繳費日"
                             value={projectData.pay_day}
-                             // 設為唯讀，由起租日自動設置
+                        // 設為唯讀，由起租日自動設置
                         />
 
                         <Input
                             type="date"
                             label="下次繳費日"
                             value={projectData.next_pay_day}
-                            // 設為唯讀，由系統自動計算
+                        // 設為唯讀，由系統自動計算
                         />
 
                         <Input
                             type="date"
                             label="合約到期日"
                             value={projectData.end_day}
-                          
+
                         />
 
                         {/* 費用相關 */}
@@ -1648,7 +1636,7 @@ export function ProjectList() {
                             type="number"
                             label="單期費用"
                             value={projectData.original_price}
-                             // 設為唯讀，由商務項目自動帶入
+                        // 設為唯讀，由商務項目自動帶入
                         />
 
                         {/* 期數項目 */}
@@ -1700,14 +1688,14 @@ export function ProjectList() {
                             type="number"
                             label="押金"
                             value={projectData.deposit}
-                           
+
                         />
 
                         <Input
                             type="number"
                             label="違約金"
                             value={projectData.penaltyFee}
-                           
+
                         />
 
                         <div className="flex items-center gap-2">
@@ -1715,7 +1703,7 @@ export function ProjectList() {
                                 type="number"
                                 label="滯納金比例 (%)"
                                 value={projectData.lateFee}
-                                onChange={(e) => setProjectData({...projectData, lateFee: parseFloat(e.target.value) || 3})}
+                                onChange={(e) => setProjectData({ ...projectData, lateFee: parseFloat(e.target.value) || 3 })}
                             />
                         </div>
 
@@ -1724,7 +1712,7 @@ export function ProjectList() {
                             <Textarea
                                 label="備註"
                                 value={projectData.remark}
-                                onChange={(e) => setProjectData({...projectData, remark: e.target.value})}
+                                onChange={(e) => setProjectData({ ...projectData, remark: e.target.value })}
                             />
                         </div>
 
@@ -1766,10 +1754,10 @@ export function ProjectList() {
                         確認新增
                     </Button>
                 </DialogFooter>
-            </Dialog>
+            </Dialog >
 
             {/* 查看/編輯專案彈窗 */}
-            <Dialog open={detailOpen} handler={handleOpenDetail} size="xl">
+            < Dialog open={detailOpen} handler={handleOpenDetail} size="xl" >
                 <DialogHeader className="flex justify-between items-center">
                     <Typography variant="h6">
                         {viewMode === 'view' ? '查看專案' : '編輯專案'}
@@ -1911,14 +1899,14 @@ export function ProjectList() {
                                     <Input
                                         label="專案名稱"
                                         value={projectData.projectName}
-                                        onChange={(e) => setProjectData({...projectData, projectName: e.target.value})}
+                                        onChange={(e) => setProjectData({ ...projectData, projectName: e.target.value })}
                                         required
                                     />
                                 </div>
-                                <Select 
-                                    label="選擇客戶" 
+                                <Select
+                                    label="選擇客戶"
                                     value={projectData.customer_id.toString()} // 確保是字串類型
-                                    onChange={(value) => setProjectData({...projectData, customer_id: value})}
+                                    onChange={(value) => setProjectData({ ...projectData, customer_id: value })}
                                     required
                                 >
                                     {customers.map((customer) => (
@@ -1928,8 +1916,8 @@ export function ProjectList() {
                                     ))}
                                 </Select>
 
-                                <Select 
-                                    label="商務項目" 
+                                <Select
+                                    label="商務項目"
                                     value={projectData.business_item_id.toString()} // 確保是字串類型
                                     onChange={handleBusinessItemChange}
                                     required
@@ -1941,9 +1929,9 @@ export function ProjectList() {
                                     ))}
                                 </Select>
 
-                                <Select 
-                                    label="付款方案" 
-                                    value={projectData.payment_period} 
+                                <Select
+                                    label="付款方案"
+                                    value={projectData.payment_period}
                                     onChange={handlePaymentPlanChange}
                                 >
                                     {PAYMENT_PLANS.map((plan) => (
@@ -1953,9 +1941,9 @@ export function ProjectList() {
                                     ))}
                                 </Select>
 
-                                <Select 
-                                    label="合約類型" 
-                                    value={projectData.contractType} 
+                                <Select
+                                    label="合約類型"
+                                    value={projectData.contractType}
                                     onChange={handleContractTypeChange}
                                 >
                                     {CONTRACT_TYPES.map((type) => (
@@ -1969,7 +1957,7 @@ export function ProjectList() {
                                     type="date"
                                     label="起租時間"
                                     value={formatDate(projectData.start_day)}
-                                    onChange={(e) => setProjectData({...projectData, start_day: e.target.value})}
+                                    onChange={(e) => setProjectData({ ...projectData, start_day: e.target.value })}
                                     required
                                 />
 
@@ -1977,7 +1965,7 @@ export function ProjectList() {
                                     type="date"
                                     label="簽約日"
                                     value={formatDate(projectData.signing_day)}
-                                    onChange={(e) => setProjectData({...projectData, signing_day: e.target.value})}
+                                    onChange={(e) => setProjectData({ ...projectData, signing_day: e.target.value })}
                                 />
 
                                 <Input
@@ -2135,12 +2123,13 @@ export function ProjectList() {
                         </>
                     )}
                 </DialogFooter>
-            </Dialog>
+            </Dialog >
 
             {/* 繳費歷程彈窗 */}
-            <PaymentHistoryModal 
+            < PaymentHistoryModal
                 open={paymentHistoryOpen}
-                handleOpen={() => setPaymentHistoryOpen(!paymentHistoryOpen)}
+                handleOpen={() => setPaymentHistoryOpen(!paymentHistoryOpen)
+                }
                 projectId={selectedProjectId}
                 projectData={projects.find(p => p.id === selectedProjectId)}
             />
@@ -2170,9 +2159,8 @@ export function ProjectList() {
                     <span>合約已過期</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
 export default ProjectList;
-  

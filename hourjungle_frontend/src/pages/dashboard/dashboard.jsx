@@ -83,6 +83,14 @@ const getContractStatus = (endDay, nextPayDay) => {
     const payDate = new Date(nextPayDay);
     const diffDays = Math.ceil((contractEndDate - today) / (1000 * 60 * 60 * 24));
     
+    // 優先判斷付款相關狀態
+    if (payDate < today) {
+        return 'bg-red-50'; // 已逾期
+    }
+    if (Math.ceil((payDate - today) / (1000 * 60 * 60 * 24)) <= 5) {
+        return 'bg-amber-50'; // 即將到期
+    }
+
     // 合約已過期
     if (diffDays < 0) {
         return 'bg-gray-100'; // 灰色
@@ -91,13 +99,7 @@ const getContractStatus = (endDay, nextPayDay) => {
     if (diffDays <= 30) {
         return 'bg-blue-50'; // 淺藍色
     }
-    // 付款相關狀態
-    if (payDate < today) {
-        return 'bg-red-50'; // 已逾期
-    }
-    if (Math.ceil((payDate - today) / (1000 * 60 * 60 * 24)) <= 5) {
-        return 'bg-amber-50'; // 即將到期
-    }
+    
     return '';
 };
 
@@ -134,10 +136,16 @@ export function Dashboard() {
         if (!user) return "未登入";
         // 使用 isTopAccount 來判斷（已在 usePermission 中統一處理型別轉換）
         if (isTopAccount) return "所有分館";
+        
+        // 如果 branches 還沒載入完成，先顯示 user.branch 或 "載入中..."
+        if (!branches || branches.length === 0) {
+            return user.branch || "載入中...";
+        }
+
         // 根據 branch_id 查找分館名稱（使用 Number 確保型別一致）
         const userBranchId = Number(user.branch_id);
         const branch = branches.find(b => Number(b.id) === userBranchId);
-        console.log('Debug branch lookup:', { userBranchId, branches: branches.map(b => ({id: b.id, name: b.name})), found: branch?.name });
+        // console.log('Debug branch lookup:', { userBranchId, branches: branches.map(b => ({id: b.id, name: b.name})), found: branch?.name });
         return branch?.name || user.branch || "未知分館";
     };
 
@@ -543,7 +551,6 @@ export function Dashboard() {
                                                     {(() => {
                                                         const val = Number(project.payment_period);
                                                         const found = PAYMENT_PLANS.find(t => t.value === val);
-                                                        console.log('Debug payment_period:', { raw: project.payment_period, parsed: val, found: found?.label });
                                                         return found?.label || '-';
                                                     })()}
                                                 </Typography>
@@ -551,9 +558,9 @@ export function Dashboard() {
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
                                                     {(() => {
+                                                        // contractType 可能是字串或數字，統一轉為字串比較，因為 CONTRACT_TYPES 的 value 是字串
                                                         const val = String(project.contractType || '');
                                                         const found = CONTRACT_TYPES.find(t => t.value === val);
-                                                        console.log('Debug contractType:', { raw: project.contractType, parsed: val, found: found?.label });
                                                         return found?.label || '-';
                                                     })()}
                                                 </Typography>

@@ -31,8 +31,8 @@ import {
     Cog6ToothIcon,
     PencilIcon,
     EyeSlashIcon
-  } from "@heroicons/react/24/solid";
-import { authorsTableData } from "@/data";
+} from "@heroicons/react/24/solid";
+// import { authorsTableData } from "@/data";
 import { useState, useEffect } from "react";
 import { ArrowRightIcon, ArrowLeftIcon, EyeIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
@@ -46,7 +46,7 @@ import * as XLSX from 'xlsx';
 
 export function CustomerList() {
     // 獲取用戶權限
-   const { hasPermission, isTopAccount } = usePermission();
+    const { hasPermission, isTopAccount } = usePermission();
     const dispatch = useDispatch();
     const { list: customers, loading, pagination } = useSelector(state => state.customers);
     const { list: branches } = useSelector(state => state.branches);
@@ -55,32 +55,32 @@ export function CustomerList() {
     const [open, setOpen] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
     const [customerData, setCustomerData] = useState({
-        number: '',           
-        name: '',            
+        number: '',
+        name: '',
         branch_id: user?.branch_id || '',  // 使用可选链操作符
         //branch_name: user?.branch || '',   // 使用可选链操作符
-        email: '',           
-        id_number: '',       
-        birthday: '',        
-        address: '',         
-        phone_number: '',    
-        company_name: '',    
-        company_number: '',  
-        company_website: '', 
-        company_email: '',   
-        company_address: '', 
-        company_phone_number: '', 
-        company_fax_number: '',   
-        company_contact_person: '', 
-        company_contact_person_phone_number: '', 
-        company_contact_person_email: '', 
-        line_id: '',         
-        line_nickname: '',   
-        id_card_front: null, 
-        id_card_back: null,  
-        remark: '',          
-        status: 1,           
-        modify: 1            
+        email: '',
+        id_number: '',
+        birthday: '',
+        address: '',
+        phone_number: '',
+        company_name: '',
+        company_number: '',
+        company_website: '',
+        company_email: '',
+        company_address: '',
+        company_phone_number: '',
+        company_fax_number: '',
+        company_contact_person: '',
+        company_contact_person_phone_number: '',
+        company_contact_person_email: '',
+        line_id: '',
+        line_nickname: '',
+        id_card_front: null,
+        id_card_back: null,
+        remark: '',
+        status: 1,
+        modify: 1
     });
 
     // 添加分頁相關的 state
@@ -99,7 +99,7 @@ export function CustomerList() {
     const [sortOrder, setSortOrder] = useState('desc');
 
     // 計算總頁數
-    const totalPages = Math.ceil(authorsTableData.length / itemsPerPage);
+    const totalPages = Math.ceil((pagination?.total || 0) / itemsPerPage);
 
     // 添加載入狀態
     const [isLoading, setIsLoading] = useState(false);
@@ -130,7 +130,7 @@ export function CustomerList() {
         setIsLoading(true);
         setCurrentPage(newPage);
         localStorage.setItem('customerListPage', newPage.toString());
-        
+
         // 0.5秒後關閉載入動畫
         setTimeout(() => {
             setIsLoading(false);
@@ -144,7 +144,7 @@ export function CustomerList() {
         setCurrentPage(1);
         localStorage.setItem('customerListItemsPerPage', value.toString());
         localStorage.setItem('customerListPage', '1');
-        
+
         setTimeout(() => {
             setIsLoading(false);
         }, 500);
@@ -152,9 +152,7 @@ export function CustomerList() {
 
     // 獲取當前頁的數據
     const getCurrentPageData = () => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return authorsTableData.slice(startIndex, endIndex);
+        return customers || [];
     };
 
     const handleFileUpload = async (event) => {
@@ -296,7 +294,7 @@ export function CustomerList() {
                 alert('請填寫身分證字號');
                 return;
             }
-            
+
 
             // 確保分館ID已設置
             const submitData = {
@@ -372,14 +370,14 @@ export function CustomerList() {
                 alert('請填寫電子郵件');
                 return;
             }
-            
+
 
             // 創建一個新的 FormData 對象
             const formData = new FormData();
-            
+
             // 添加客戶ID
             formData.append('id', customerData.id);
-            
+
             // 手動添加每個欄位，確保使用正確的欄位名稱
             const fields = {
                 'number': customerData.number,
@@ -423,7 +421,7 @@ export function CustomerList() {
 
             console.log('Updating customer with ID:', customerData.id); // 添加日志
             const response = await dispatch(updateCustomer(formData));
-            
+
             if (response.success) {
                 setDetailOpen(false);
                 setViewMode('view');
@@ -740,60 +738,60 @@ export function CustomerList() {
 
     return (
         <div className="mt-12 mb-8 flex flex-col gap-12">
-             {hasPermission('顧客資料匯入') && (
-            <Card>
-                <CardHeader variant="gradient" color="white" className="mb-8 p-6">
-                    <Typography variant="h6" color="black" className="mb-4">
-                        匯入/ 匯出客戶資料
-                    </Typography>
-                    <div className="flex gap-4 items-center">
-                        <input
-                            type="file"
-                            accept=".xlsx,.xls"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            id="fileInput"
-                        />
-                        <label htmlFor="fileInput">
-                            <Button 
-                                variant="gradient" 
-                                color="blue" 
+            {hasPermission('顧客資料匯入') && (
+                <Card>
+                    <CardHeader variant="gradient" color="white" className="mb-8 p-6">
+                        <Typography variant="h6" color="black" className="mb-4">
+                            匯入/ 匯出客戶資料
+                        </Typography>
+                        <div className="flex gap-4 items-center">
+                            <input
+                                type="file"
+                                accept=".xlsx,.xls"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                id="fileInput"
+                            />
+                            <label htmlFor="fileInput">
+                                <Button
+                                    variant="gradient"
+                                    color="blue"
+                                    className="flex items-center gap-2 px-5"
+                                    onClick={() => document.getElementById('fileInput').click()}
+                                >
+                                    匯入客戶
+                                </Button>
+                            </label>
+                            {selectedFile && (
+                                <Typography variant="small" className="text-black">
+                                    已選擇: {selectedFile.name}
+                                </Typography>
+                            )}
+
+                            <Button
+                                variant="gradient"
                                 className="flex items-center gap-2 px-5"
-                                onClick={() => document.getElementById('fileInput').click()}
+                                onClick={handleExportExcel}
                             >
-                                匯入客戶
+                                匯出客戶
                             </Button>
-                        </label>
-                        {selectedFile && (
-                            <Typography variant="small" className="text-black">
-                                已選擇: {selectedFile.name}
-                            </Typography>
-                        )}
-                        
-                        <Button
-                            variant="gradient"
-                            className="flex items-center gap-2 px-5"
-                            onClick={handleExportExcel}
-                        >
-                            匯出客戶
-                        </Button>
-                        <Button 
-                            variant="gradient" 
-                            color="green" 
-                            className="flex items-center gap-2 px-5"
-                            
-                            onClick={handleExportExample}
-                        >
-                            範例下載
-                        </Button>
-                        {selectedFile && (
-                            <Typography variant="small" className="text-black">
-                                已選擇: {selectedFile.name}
-                            </Typography>
-                        )}
-                    </div>
-                </CardHeader>
-            </Card>
+                            <Button
+                                variant="gradient"
+                                color="green"
+                                className="flex items-center gap-2 px-5"
+
+                                onClick={handleExportExample}
+                            >
+                                範例下載
+                            </Button>
+                            {selectedFile && (
+                                <Typography variant="small" className="text-black">
+                                    已選擇: {selectedFile.name}
+                                </Typography>
+                            )}
+                        </div>
+                    </CardHeader>
+                </Card>
             )}
             <Card>
                 <CardHeader variant="gradient" color="white" className="mb-8 p-6 flex justify-between">
@@ -861,155 +859,155 @@ export function CustomerList() {
                         </div>
                     ) : (
                         <>
-                        <div className="overflow-x-auto">
-                            <table className="w-full min-w-[800px] table-fixed">
-                                <thead>
-                                    <tr>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                客戶編號
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                客戶姓名
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[80px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                分館
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[150px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                公司名稱
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[70px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                狀態
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[90px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                合約狀態
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                建立時間
-                                            </Typography>
-                                        </th>
-                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
-                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                                                操作
-                                            </Typography>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                               
-                                    {loading ? (
-                                        <tr >
-                                        <td colSpan="8" className="text-center py-4 flex justify-center items-center w-full">
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[800px] table-fixed">
+                                    <thead>
+                                        <tr>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    客戶編號
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    客戶姓名
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[80px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    分館
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[150px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    公司名稱
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[70px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    狀態
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[90px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    合約狀態
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    建立時間
+                                                </Typography>
+                                            </th>
+                                            <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
+                                                <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                    操作
+                                                </Typography>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 
-                                        </td>
-                                    </tr>
-                                    ) : customers.length > 0 ? (
-                                        customers.map((customer, key) => (
-                                            
-                                            <tr key={customer.id}>
-                                                <td className="py-3 px-3 w-[100px]">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.number}>
-                                                        {customer.number}
-                                                    </Typography>
-                                                </td>
-                                                <td className="py-3 px-3 w-[120px]">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.name}>
-                                                        {customer.name}
-                                                    </Typography>
-                                                </td>
-                                                <td className="py-3 px-3 w-[80px]">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.branch_name}>
-                                                        {customer.branch_name || '-'}
-                                                    </Typography>
-                                                </td>
-                                                <td className="py-3 px-3 w-[150px]">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.company_name}>
-                                                        {customer.company_name || '-'}
-                                                    </Typography>
-                                                </td>
-                                                <td className="py-3 px-3 w-[70px]">
-                                                    <Chip
-                                                        variant="gradient"
-                                                        color={customer.status ? "green" : "blue-gray"}
-                                                        value={customer.status ? "啟用" : "禁用"}
-                                                        className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                                                    />
-                                                </td>
-                                                <td className="py-3 px-3 w-[90px]">
-                                                    <Chip
-                                                        variant="gradient"
-                                                        color={
-                                                            customer.contract_status === 'active' ? "green" :
-                                                            customer.contract_status === 'expired' ? "red" :
-                                                            "gray"
-                                                        }
-                                                        value={
-                                                            customer.contract_status === 'active' ? "有效" :
-                                                            customer.contract_status === 'expired' ? "已過期" :
-                                                            "無合約"
-                                                        }
-                                                        className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                                                    />
-                                                </td>
-                                                <td className="py-3 px-3 w-[100px]">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate">
-                                                        {customer.created_at?.split(' ')[0] || '-'}
-                                                    </Typography>
-                                                </td>
-                                                <td className="py-3 px-3 w-[120px]">
-                                                    <div className="flex gap-1 flex-nowrap">
-                                                    {hasPermission('查看顧客') && (
-                                                        <IconButton
-                                                            variant="text"
-                                                            color="blue"
-                                                            onClick={() => handleView(customer.id)}
-                                                        >
-                                                            <EyeIcon className="h-4 w-4" />
-                                                        </IconButton>
-                                                    )}
-                                                    {hasPermission('編輯顧客') && (
-                                                        <IconButton
-                                                            variant="text"
-                                                            color="green"
-                                                            onClick={() => handleEdit(customer.id)}
-                                                        >
-                                                            <PencilSquareIcon className="h-4 w-4" />
-                                                        </IconButton>
-                                                        )}
-                                                         {hasPermission('刪除顧客') && (
-                                                        <IconButton
-                                                            variant="text"
-                                                            color="red"
-                                                            onClick={() => handleDeleteCustomer(customer.id)}
-                                                        >
-                                                            <TrashIcon className="h-4 w-4" />
-                                                        </IconButton>
-                                                        )}
-                                                    </div>
+                                        {loading ? (
+                                            <tr >
+                                                <td colSpan="8" className="text-center py-4 flex justify-center items-center w-full">
+
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="8" className="text-center py-4">
-                                                <Typography>尚無資料</Typography>
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                        ) : customers.length > 0 ? (
+                                            customers.map((customer, key) => (
+
+                                                <tr key={customer.id}>
+                                                    <td className="py-3 px-3 w-[100px]">
+                                                        <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.number}>
+                                                            {customer.number}
+                                                        </Typography>
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[120px]">
+                                                        <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.name}>
+                                                            {customer.name}
+                                                        </Typography>
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[80px]">
+                                                        <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.branch_name}>
+                                                            {customer.branch_name || '-'}
+                                                        </Typography>
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[150px]">
+                                                        <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.company_name}>
+                                                            {customer.company_name || '-'}
+                                                        </Typography>
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[70px]">
+                                                        <Chip
+                                                            variant="gradient"
+                                                            color={customer.status ? "green" : "blue-gray"}
+                                                            value={customer.status ? "啟用" : "禁用"}
+                                                            className="py-0.5 px-2 text-[11px] font-medium w-fit"
+                                                        />
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[90px]">
+                                                        <Chip
+                                                            variant="gradient"
+                                                            color={
+                                                                customer.contract_status === 'active' ? "green" :
+                                                                    customer.contract_status === 'expired' ? "red" :
+                                                                        "gray"
+                                                            }
+                                                            value={
+                                                                customer.contract_status === 'active' ? "有效" :
+                                                                    customer.contract_status === 'expired' ? "已過期" :
+                                                                        "無合約"
+                                                            }
+                                                            className="py-0.5 px-2 text-[11px] font-medium w-fit"
+                                                        />
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[100px]">
+                                                        <Typography className="text-xs font-semibold text-blue-gray-600 truncate">
+                                                            {customer.created_at?.split(' ')[0] || '-'}
+                                                        </Typography>
+                                                    </td>
+                                                    <td className="py-3 px-3 w-[120px]">
+                                                        <div className="flex gap-1 flex-nowrap">
+                                                            {hasPermission('查看顧客') && (
+                                                                <IconButton
+                                                                    variant="text"
+                                                                    color="blue"
+                                                                    onClick={() => handleView(customer.id)}
+                                                                >
+                                                                    <EyeIcon className="h-4 w-4" />
+                                                                </IconButton>
+                                                            )}
+                                                            {hasPermission('編輯顧客') && (
+                                                                <IconButton
+                                                                    variant="text"
+                                                                    color="green"
+                                                                    onClick={() => handleEdit(customer.id)}
+                                                                >
+                                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                                </IconButton>
+                                                            )}
+                                                            {hasPermission('刪除顧客') && (
+                                                                <IconButton
+                                                                    variant="text"
+                                                                    color="red"
+                                                                    onClick={() => handleDeleteCustomer(customer.id)}
+                                                                >
+                                                                    <TrashIcon className="h-4 w-4" />
+                                                                </IconButton>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="8" className="text-center py-4">
+                                                    <Typography>尚無資料</Typography>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
                             <div className="flex justify-center p-4">
                                 <Pagination />
@@ -1029,8 +1027,8 @@ export function CustomerList() {
                             <Select
                                 label="分館"
                                 value={customerData.branch_id?.toString()}
-                                onChange={(value) => setCustomerData({ 
-                                    ...customerData, 
+                                onChange={(value) => setCustomerData({
+                                    ...customerData,
                                     branch_id: parseInt(value),
                                     branch_name: branches?.find(b => b.id === parseInt(value))?.name || ''
                                 })}
@@ -1221,13 +1219,13 @@ export function CustomerList() {
                                     className="mb-2"
                                 />
                                 {customerData.id_card_front && (
-                                    <img 
+                                    <img
                                         src={
-                                            customerData.id_card_front instanceof File 
+                                            customerData.id_card_front instanceof File
                                                 ? URL.createObjectURL(customerData.id_card_front)
                                                 : customerData.id_card_front
                                         }
-                                        alt="身分證正面預覽" 
+                                        alt="身分證正面預覽"
                                         className="w-full max-w-[300px] h-auto mt-2"
                                     />
                                 )}
@@ -1245,13 +1243,13 @@ export function CustomerList() {
                                     className="mb-2"
                                 />
                                 {customerData.id_card_back && (
-                                    <img 
+                                    <img
                                         src={
-                                            customerData.id_card_back instanceof File 
+                                            customerData.id_card_back instanceof File
                                                 ? URL.createObjectURL(customerData.id_card_back)
                                                 : customerData.id_card_back
                                         }
-                                        alt="身分證背面預覽" 
+                                        alt="身分證背面預覽"
                                         className="w-full max-w-[300px] h-auto mt-2"
                                     />
                                 )}
@@ -1285,50 +1283,50 @@ export function CustomerList() {
                     </Button>
                 </DialogHeader>
                 <DialogBody divider className="h-[40rem] overflow-y-scroll">
-                    
-                    
-                        {viewMode === 'view' ? (
-                            <>
-                           <div className="relative mt-8 h-36 w-full overflow-hidden rounded-xl bg-[url('/img/home-decor-1.jpeg')] bg-cover	bg-bottom">
+
+
+                    {viewMode === 'view' ? (
+                        <>
+                            <div className="relative mt-8 h-36 w-full overflow-hidden rounded-xl bg-[url('/img/home-decor-1.jpeg')] bg-cover	bg-bottom">
                                 <div className="absolute inset-0 h-full w-full bg-gray-900/20" />
                             </div>
-                                <Card className="mx-3 -mt-16 mb-6 lg:mx-4 border border-blue-gray-100">
-                                    <CardBody className="p-4">
+                            <Card className="mx-3 -mt-16 mb-6 lg:mx-4 border border-blue-gray-100">
+                                <CardBody className="p-4">
                                     <div className="mb-10 flex items-center justify-between flex-wrap gap-6">
                                         <div className="flex items-center gap-6">
-                                        <Avatar
-                                            src="/img/logo_example.jpg"
-                                            alt="bruce-mars"
-                                            size="xl"
-                                            variant="rounded"
-                                            className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                                        />
-                                        <div>
-                                            <Typography variant="h5" color="blue-gray" className="mb-1">
-                                            {customerData.company_name}
-                                            </Typography>
-                                            <Typography
-                                            variant="small"
-                                            className="font-normal text-blue-gray-600"
-                                            >
-                                            {customerData.number}
-                                            </Typography>
-                                        </div>
+                                            <Avatar
+                                                src="/img/logo_example.jpg"
+                                                alt="bruce-mars"
+                                                size="xl"
+                                                variant="rounded"
+                                                className="rounded-lg shadow-lg shadow-blue-gray-500/40"
+                                            />
+                                            <div>
+                                                <Typography variant="h5" color="blue-gray" className="mb-1">
+                                                    {customerData.company_name}
+                                                </Typography>
+                                                <Typography
+                                                    variant="small"
+                                                    className="font-normal text-blue-gray-600"
+                                                >
+                                                    {customerData.number}
+                                                </Typography>
+                                            </div>
                                         </div>
                                         <div className="w-96">
-                                        <Tabs value="app">
-                                            <TabsHeader>
-                                            <Tab value="app">
-                                                <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                                瀏覽模式
-                                            </Tab>
-                                            
-                                            <Tab value="settings" onClick={toggleViewMode}>
-                                                <PencilIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                                編輯模式
-                                            </Tab>
-                                            </TabsHeader>
-                                        </Tabs>
+                                            <Tabs value="app">
+                                                <TabsHeader>
+                                                    <Tab value="app">
+                                                        <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                        瀏覽模式
+                                                    </Tab>
+
+                                                    <Tab value="settings" onClick={toggleViewMode}>
+                                                        <PencilIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                        編輯模式
+                                                    </Tab>
+                                                </TabsHeader>
+                                            </Tabs>
                                         </div>
                                     </div>
                                     <div className="gird-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-1 xl:grid-cols-1">
@@ -1344,110 +1342,110 @@ export function CustomerList() {
                                             />
                                         </div>
                                         <ProfileInfoCard
-                                        title="基本資料"
-                                        description={customerData.remark || '尚無資料'}
-                                        details={{
-                                            "客戶編號": customerData.number,
-                                            "客戶姓名": customerData.name,
-                                            "身分證字號": customerData.id_number,
-                                            "生日": customerData.birthday,
-                                            "電話": customerData.phone,
-                                            "電子郵件": customerData.email,
-                                            "地址": customerData.address,
-                                            
-                                        }}
+                                            title="基本資料"
+                                            description={customerData.remark || '尚無資料'}
+                                            details={{
+                                                "客戶編號": customerData.number,
+                                                "客戶姓名": customerData.name,
+                                                "身分證字號": customerData.id_number,
+                                                "生日": customerData.birthday,
+                                                "電話": customerData.phone,
+                                                "電子郵件": customerData.email,
+                                                "地址": customerData.address,
+
+                                            }}
                                         />
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4">
-                                        <ProfileInfoCard
-                                        title="公司資料"
-                                        details={{
-                                            "公司名稱": customerData.company_name,
-                                            "統一編號": customerData.company_number,
-                                            "公司電話": customerData.company_phone_number,
-                                            "公司傳真": customerData.company_fax_number,
-                                            "公司網站": customerData.company_website,
-                                            "公司電子郵件": customerData.company_email,
-                                            "公司地址": customerData.company_address,
-                                            
-                                        }}
-                                        
-                                        />
-                                        <ProfileInfoCard
-                                            title="聯絡人資料"
-                                            details={{
-                                                "聯絡人姓名": customerData.company_contact_person,
-                                                "聯絡人電話": customerData.company_contact_person_phone_number,
-                                                "聯絡人電子郵件": customerData.company_contact_person_email,
-                                                "公司電子郵件": customerData.company_email,
-                                                "公司地址": customerData.company_address,
-                                                social: (
-                                                    <>
-                                                <div className="flex items-center gap-4">
-                                                    <i className="fa-brands fa-line text-green-700" /><Typography>{customerData.line_nickname}</Typography>
-                                                </div>
-                                                <div className="flex items-center gap-4">
-                                                    <Input label="Line ID" value={customerData.line_id} readOnly></Input>
-                                            </div>
-                                            </>
-                                                ),
-                                            }}
-                                            
+                                            <ProfileInfoCard
+                                                title="公司資料"
+                                                details={{
+                                                    "公司名稱": customerData.company_name,
+                                                    "統一編號": customerData.company_number,
+                                                    "公司電話": customerData.company_phone_number,
+                                                    "公司傳真": customerData.company_fax_number,
+                                                    "公司網站": customerData.company_website,
+                                                    "公司電子郵件": customerData.company_email,
+                                                    "公司地址": customerData.company_address,
+
+                                                }}
+
                                             />
-                                            </div>
+                                            <ProfileInfoCard
+                                                title="聯絡人資料"
+                                                details={{
+                                                    "聯絡人姓名": customerData.company_contact_person,
+                                                    "聯絡人電話": customerData.company_contact_person_phone_number,
+                                                    "聯絡人電子郵件": customerData.company_contact_person_email,
+                                                    "公司電子郵件": customerData.company_email,
+                                                    "公司地址": customerData.company_address,
+                                                    social: (
+                                                        <>
+                                                            <div className="flex items-center gap-4">
+                                                                <i className="fa-brands fa-line text-green-700" /><Typography>{customerData.line_nickname}</Typography>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <Input label="Line ID" value={customerData.line_id} readOnly></Input>
+                                                            </div>
+                                                        </>
+                                                    ),
+                                                }}
+
+                                            />
+                                        </div>
                                     </div>
-                                
-                                    </CardBody>
-                                </Card>     
-                           
-                                
-                            </>
-                        ) : (
-                            <>
-                             <div className="relative mt-8 h-36 w-full overflow-hidden rounded-xl bg-[url('/img/home-decor-1.jpeg')] bg-cover	bg-bottom">
+
+                                </CardBody>
+                            </Card>
+
+
+                        </>
+                    ) : (
+                        <>
+                            <div className="relative mt-8 h-36 w-full overflow-hidden rounded-xl bg-[url('/img/home-decor-1.jpeg')] bg-cover	bg-bottom">
                                 <div className="absolute inset-0 h-full w-full bg-gray-900/20" />
                             </div>
                             <Card className="mx-3 -mt-16 mb-6 lg:mx-4 border border-blue-gray-100">
-                            <CardBody className="p-4">
-                            <div className="mb-10 flex items-center justify-between flex-wrap gap-6">
+                                <CardBody className="p-4">
+                                    <div className="mb-10 flex items-center justify-between flex-wrap gap-6">
                                         <div className="flex items-center gap-6">
-                                        <Avatar
-                                            src="/img/logo_example.jpg"
-                                            alt="bruce-mars"
-                                            size="xl"
-                                            variant="rounded"
-                                            className="rounded-lg shadow-lg shadow-blue-gray-500/40"
-                                        />
-                                        <div>
-                                            <Typography variant="h5" color="blue-gray" className="mb-1">
-                                            <Input
-                                                label="公司名稱"
-                                                value={customerData.company_name}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_name: e.target.value })}
+                                            <Avatar
+                                                src="/img/logo_example.jpg"
+                                                alt="bruce-mars"
+                                                size="xl"
+                                                variant="rounded"
+                                                className="rounded-lg shadow-lg shadow-blue-gray-500/40"
                                             />
-                                                        </Typography>
-                                                        <Typography
-                                                        variant="small"
-                                                        className="font-normal text-blue-gray-600"
-                                                        >
-                                                        <Input
-                                                label="客戶編號"
-                                                value={customerData.number}
-                                                onChange={(e) => setCustomerData({ ...customerData, number: e.target.value })}
-                                            />
-                                            </Typography>
-                                        </div>
+                                            <div>
+                                                <Typography variant="h5" color="blue-gray" className="mb-1">
+                                                    <Input
+                                                        label="公司名稱"
+                                                        value={customerData.company_name}
+                                                        onChange={(e) => setCustomerData({ ...customerData, company_name: e.target.value })}
+                                                    />
+                                                </Typography>
+                                                <Typography
+                                                    variant="small"
+                                                    className="font-normal text-blue-gray-600"
+                                                >
+                                                    <Input
+                                                        label="客戶編號"
+                                                        value={customerData.number}
+                                                        onChange={(e) => setCustomerData({ ...customerData, number: e.target.value })}
+                                                    />
+                                                </Typography>
+                                            </div>
                                         </div>
                                         <div className="w-80">
                                             <Tabs value="settings">
                                                 <TabsHeader>
-                                                <Tab value="app" onClick={toggleViewMode}>
-                                                    <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                                    瀏覽模式
-                                                </Tab>
-                                                <Tab value="settings">
-                                                    <PencilIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
-                                                    編輯模式
-                                                </Tab>
+                                                    <Tab value="app" onClick={toggleViewMode}>
+                                                        <HomeIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                        瀏覽模式
+                                                    </Tab>
+                                                    <Tab value="settings">
+                                                        <PencilIcon className="-mt-1 mr-2 inline-block h-5 w-5" />
+                                                        編輯模式
+                                                    </Tab>
                                                 </TabsHeader>
                                             </Tabs>
                                         </div>
@@ -1459,10 +1457,10 @@ export function CustomerList() {
                                             </Typography>
                                             <div className="flex items-center gap-2">
                                                 <Switch
-                                                        label="狀態"
-                                                        checked={customerData.status === 1}
-                                                        onChange={(e) => setCustomerData({ ...customerData, status: e.target.checked ? 1 : 0 })}
-                                                    />
+                                                    label="狀態"
+                                                    checked={customerData.status === 1}
+                                                    onChange={(e) => setCustomerData({ ...customerData, status: e.target.checked ? 1 : 0 })}
+                                                />
                                                 <span>{customerData.status === 1 ? '啟用' : '停用'}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -1477,109 +1475,109 @@ export function CustomerList() {
                                             </Typography>
                                         </div>
                                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <Typography variant="h6" color="blue-gray" className="col-span-2 mb-2 flex items-center justify-between">
+                                            <Typography variant="h6" color="blue-gray" className="col-span-2 mb-2 flex items-center justify-between">
                                                 基本資料
-                                                
-                                        </Typography>
-                                        <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                
-                                                label="客戶編號"
-                                                value={customerData.number}
-                                                onChange={(e) => setCustomerData({ ...customerData, number: e.target.value })}
-                                            />
+
+                                            </Typography>
+                                            <div className="col-span-2 lg:col-span-1">
+                                                <Input
+
+                                                    label="客戶編號"
+                                                    value={customerData.number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="客戶姓名"
-                                                value={customerData.name}
-                                                onChange={(e) => setCustomerData({ ...customerData, name: e.target.value })}
-                                                required
-                                            />
+                                                <Input
+                                                    label="客戶姓名"
+                                                    value={customerData.name}
+                                                    onChange={(e) => setCustomerData({ ...customerData, name: e.target.value })}
+                                                    required
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="身分證字號"
-                                                value={customerData.id_number}
-                                                onChange={(e) => setCustomerData({ ...customerData, id_number: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="身分證字號"
+                                                    value={customerData.id_number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, id_number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                type="date"
-                                                label="生日"
-                                                value={formatDate(customerData.birthday)}
-                                                onChange={(e) => setCustomerData({ ...customerData, birthday: e.target.value })}
-                                            />
+                                                <Input
+                                                    type="date"
+                                                    label="生日"
+                                                    value={formatDate(customerData.birthday)}
+                                                    onChange={(e) => setCustomerData({ ...customerData, birthday: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="電話"
-                                                value={customerData.phone}
-                                                onChange={(e) => setCustomerData({ ...customerData, phone: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="電話"
+                                                    value={customerData.phone}
+                                                    onChange={(e) => setCustomerData({ ...customerData, phone: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="電子郵件"
-                                                value={customerData.email}
-                                                onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
-                                                type="email"
-                                            />
-                                            </div> 
+                                                <Input
+                                                    label="電子郵件"
+                                                    value={customerData.email}
+                                                    onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
+                                                    type="email"
+                                                />
+                                            </div>
                                             <div className="col-span-2 lg:col-span-1">
                                                 <Input
                                                     label="地址"
                                                     value={customerData.address}
                                                     onChange={(e) => setCustomerData({ ...customerData, address: e.target.value })}
                                                 />
-                                            </div> 
-                                         
+                                            </div>
+
                                             <Typography variant="h6" color="blue-gray" className="col-span-2 mt-4 mb-2">
                                                 公司資料
                                             </Typography>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="公司名稱"
-                                                value={customerData.company_name}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_name: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="公司名稱"
+                                                    value={customerData.company_name}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_name: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="統一編號"
-                                                value={customerData.company_number}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_number: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="統一編號"
+                                                    value={customerData.company_number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="公司電話"
-                                                value={customerData.company_phone_number}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_phone_number: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="公司電話"
+                                                    value={customerData.company_phone_number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_phone_number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="公司傳真"
-                                                value={customerData.company_fax_number}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_fax_number: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="公司傳真"
+                                                    value={customerData.company_fax_number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_fax_number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="公司網站"
-                                                value={customerData.company_website}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_website: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="公司網站"
+                                                    value={customerData.company_website}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_website: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="公司電子郵件"
-                                                value={customerData.company_email}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_email: e.target.value })}
-                                                type="email"
-                                            />
+                                                <Input
+                                                    label="公司電子郵件"
+                                                    value={customerData.company_email}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_email: e.target.value })}
+                                                    type="email"
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
                                                 <Input
@@ -1592,43 +1590,43 @@ export function CustomerList() {
                                                 聯絡人資料
                                             </Typography>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="聯絡人姓名"
-                                                value={customerData.company_contact_person}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_contact_person: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="聯絡人姓名"
+                                                    value={customerData.company_contact_person}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_contact_person: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="聯絡人電話"
-                                                value={customerData.company_contact_person_phone_number}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_contact_person_phone_number: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="聯絡人電話"
+                                                    value={customerData.company_contact_person_phone_number}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_contact_person_phone_number: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="聯絡人電子郵件"
-                                                value={customerData.company_contact_person_email}
-                                                onChange={(e) => setCustomerData({ ...customerData, company_contact_person_email: e.target.value })}
-                                                type="email"
-                                            />
+                                                <Input
+                                                    label="聯絡人電子郵件"
+                                                    value={customerData.company_contact_person_email}
+                                                    onChange={(e) => setCustomerData({ ...customerData, company_contact_person_email: e.target.value })}
+                                                    type="email"
+                                                />
                                             </div>
                                             <Typography variant="h6" color="blue-gray" className="col-span-2 mt-4 mb-2">
                                                 LINE 資料
                                             </Typography>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="LINE ID"
-                                                value={customerData.line_id}
-                                                onChange={(e) => setCustomerData({ ...customerData, line_id: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="LINE ID"
+                                                    value={customerData.line_id}
+                                                    onChange={(e) => setCustomerData({ ...customerData, line_id: e.target.value })}
+                                                />
                                             </div>
                                             <div className="col-span-2 lg:col-span-1">
-                                            <Input
-                                                label="LINE 暱稱"
-                                                value={customerData.line_nickname}
-                                                onChange={(e) => setCustomerData({ ...customerData, line_nickname: e.target.value })}
-                                            />
+                                                <Input
+                                                    label="LINE 暱稱"
+                                                    value={customerData.line_nickname}
+                                                    onChange={(e) => setCustomerData({ ...customerData, line_nickname: e.target.value })}
+                                                />
                                             </div>
                                             <Typography variant="h6" color="blue-gray" className="col-span-2 mt-4 mb-2">
                                                 其他設定
@@ -1640,34 +1638,34 @@ export function CustomerList() {
                                                     onChange={(e) => setCustomerData({ ...customerData, remark: e.target.value })}
                                                 />
                                             </div>
-                                            
+
 
 
                                         </div>
-                                        
-                            </div>
-                            </CardBody>
-                            </Card>  
-                            
-                                
-                                
-                            </>
-                        )}
 
-                    
+                                    </div>
+                                </CardBody>
+                            </Card>
+
+
+
+                        </>
+                    )}
+
+
                 </DialogBody>
                 <DialogFooter className="space-x-2">
-                    <Button 
-                        variant="outlined" 
-                        color="red" 
+                    <Button
+                        variant="outlined"
+                        color="red"
                         onClick={handleCancel}
                     >
                         {viewMode === 'view' ? '關閉' : '取消'}
                     </Button>
                     {viewMode === 'edit' && (
-                        <Button 
-                            variant="gradient" 
-                            color="green" 
+                        <Button
+                            variant="gradient"
+                            color="green"
                             onClick={handleSaveEdit}
                         >
                             保存
@@ -1686,4 +1684,3 @@ export function CustomerList() {
 }
 
 export default CustomerList;
-  

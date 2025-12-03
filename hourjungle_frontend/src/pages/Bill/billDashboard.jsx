@@ -1,47 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  Typography,
-  Card,
-  CardHeader,
-  CardBody,
-  IconButton,
-  Menu,
-  MenuHandler,
-  MenuList,
-  MenuItem,
-  Avatar,
-  Tooltip,
-  Progress,
-  Button,
-  Chip,
-  Spinner
+    Typography,
+    Card,
+    CardHeader,
+    CardBody,
+    IconButton,
+    Menu,
+    MenuHandler,
+    MenuList,
+    MenuItem,
+    Avatar,
+    Tooltip,
+    Progress,
+    Button,
+    Chip,
+    Spinner
 } from "@material-tailwind/react";
 import {
-  EllipsisVerticalIcon,
-  ArrowUpIcon,
-  UserCircleIcon,
-  BuildingOfficeIcon,
-  UserIcon,
-  BriefcaseIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  EyeIcon,
-  PencilSquareIcon,
-  TrashIcon,
-  DocumentTextIcon,
-  CurrencyDollarIcon,
+    EllipsisVerticalIcon,
+    ArrowUpIcon,
+    UserCircleIcon,
+    BuildingOfficeIcon,
+    UserIcon,
+    BriefcaseIcon,
+    PhoneIcon,
+    EnvelopeIcon,
+    EyeIcon,
+    PencilSquareIcon,
+    TrashIcon,
+    DocumentTextIcon,
+    CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 import { StatisticsCard } from "@/widgets/cards";
 import { StatisticsChart } from "@/widgets/charts";
 import { chartsConfig } from "@/configs";
 import { CheckCircleIcon, ChatBubbleLeftEllipsisIcon, ClockIcon, BanknotesIcon, ChartBarIcon } from "@heroicons/react/24/solid";
 
-import { 
-    fetchBranches, 
-    fetchDashboard, 
-    fetchProjects, 
-    getProjectInfo, 
+import {
+    fetchBranches,
+    fetchDashboard,
+    fetchProjects,
+    getProjectInfo,
     sendLineMessage,
     fetchLineBotList
 } from "@/redux/actions";
@@ -133,14 +133,35 @@ export function BillDashboard() {
             }
             const daysUntilTax = Math.ceil((taxDeadline - now) / (1000 * 60 * 60 * 24));
 
-            // 計算月度營收趨勢（簡化版：使用固定比例模擬）
+            // 計算月度營收趨勢（真實計算）
             const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-            const baseRevenue = monthlyRevenue;
+
             const revenue = months.map((_, index) => {
-                if (index <= currentMonth) {
-                    return Math.round(baseRevenue * (0.85 + Math.random() * 0.3));
-                }
-                return 0;
+                // 計算該月份的開始和結束日期
+                const monthStart = new Date(currentYear, index, 1);
+                const monthEnd = new Date(currentYear, index + 1, 0);
+
+                // 如果是未來月份，則不計算
+                if (index > currentMonth) return 0;
+
+                let monthTotal = 0;
+                projects.forEach(project => {
+                    // 檢查專案是否有效且在該月份範圍內
+                    // 狀態 1 為啟用
+                    if (project.status === 1 && project.start_day) {
+                        const projectStart = new Date(project.start_day);
+                        const projectEnd = project.end_day ? new Date(project.end_day) : new Date('2099-12-31');
+
+                        // 專案期間與月份有重疊
+                        if (projectStart <= monthEnd && projectEnd >= monthStart) {
+                            // 根據付款週期計算該月金額
+                            // 這裡簡化處理：如果是月繳，則計入；如果是其他繳費方式，可能需要攤提
+                            // 目前假設 price 為月費
+                            monthTotal += parseFloat(project.price) || parseFloat(project.sale_price) || 0;
+                        }
+                    }
+                });
+                return monthTotal;
             });
 
             setDashboardData({
@@ -161,7 +182,7 @@ export function BillDashboard() {
         }
     }, [projects, projectsLoading]);
 
-    const reminderProjects = projects.filter(project => 
+    const reminderProjects = projects.filter(project =>
         isNearPayment(project.next_pay_day) || isOverdue(project.next_pay_day)
     ).sort((a, b) => new Date(a.next_pay_day) - new Date(b.next_pay_day));
 
@@ -225,7 +246,7 @@ export function BillDashboard() {
             },
             yaxis: {
                 labels: {
-                    formatter: (value) => `$${(value/10000).toFixed(0)}萬`,
+                    formatter: (value) => `$${(value / 10000).toFixed(0)}萬`,
                     style: {
                         colors: '#64748b',
                         fontSize: '12px',
@@ -368,9 +389,9 @@ export function BillDashboard() {
                 {!isTopAccount && user?.branch_id && (
                     <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
                         <Card className="bg-white shadow-lg">
-                            <CardHeader 
-                                variant="gradient" 
-                                color="green" 
+                            <CardHeader
+                                variant="gradient"
+                                color="green"
                                 className="p-4 flex items-center gap-4"
                             >
                                 <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
