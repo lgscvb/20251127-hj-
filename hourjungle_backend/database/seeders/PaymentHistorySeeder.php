@@ -200,13 +200,17 @@ class PaymentHistorySeeder extends Seeder
                 continue;
             }
 
+            // 解析付款方式
+            $paymentMethod = $data['payment_method'] ?? '';
+            $payType = $this->mapPaymentMethod($paymentMethod);
+
             // 建立繳費記錄
             PaymentHistory::create([
                 'project_id' => $projectId ?? 0, // 如果找不到合約，使用 0
                 'customer_id' => $customerId,
                 'branch_id' => $branchId,
                 'pay_day' => $payDay,
-                'pay_type' => 'transfer', // 預設轉帳
+                'pay_type' => $payType,
                 'amount' => $amount,
                 'remark' => $remark,
             ]);
@@ -220,5 +224,26 @@ class PaymentHistorySeeder extends Seeder
         $this->command->info("  - 跳過未付款：{$noPaid} 筆");
         $this->command->info("  - 找不到客戶：{$noCustomer} 筆");
         $this->command->info("  - 其他跳過：{$skipped} 筆");
+    }
+
+    /**
+     * 對應付款方式
+     */
+    private function mapPaymentMethod(string $method): string
+    {
+        $method = trim($method);
+
+        // 現金
+        if (str_contains($method, '現金')) {
+            return 'cash';
+        }
+
+        // 信用卡
+        if (str_contains($method, '信用卡') || str_contains($method, '刷卡')) {
+            return 'credit';
+        }
+
+        // 預設轉帳（包含年繳、半年繳、月繳等）
+        return 'transfer';
     }
 }
