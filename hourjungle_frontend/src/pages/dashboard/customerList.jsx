@@ -822,23 +822,45 @@ export function CustomerList() {
                         </div>
                     ) : (
                         <>
-                        <div className="overflow-x-scroll">
-                            <table className="w-full min-w-[640px] table-auto">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[800px] table-fixed">
                                 <thead>
-                                    <tr >
-                                        {["客戶編號", "客戶姓名", "分館", "公司名稱", "狀態", "建立時間", "操作"].map((el) => (
-                                            <th
-                                                key={el}
-                                                className="border-b border-blue-gray-50 py-3 px-5 text-left ell"
-                                            >
-                                                <Typography
-                                                    variant="small"
-                                                    className="text-[11px] font-bold uppercase text-blue-gray-400 ell"
-                                                >
-                                                    {el}
-                                                </Typography>
-                                            </th>
-                                        ))}
+                                    <tr>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                客戶編號
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                客戶姓名
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[80px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                分館
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[150px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                公司名稱
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[70px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                狀態
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[100px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                建立時間
+                                            </Typography>
+                                        </th>
+                                        <th className="border-b border-blue-gray-50 py-3 px-3 text-left w-[120px]">
+                                            <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
+                                                操作
+                                            </Typography>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -853,32 +875,27 @@ export function CustomerList() {
                                         customers.map((customer, key) => (
                                             
                                             <tr key={customer.id}>
-                                                <td className="py-3 px-5 hidden">
-                                                    <div className="flex justify-center items-center bg-cover bg-center bg-no-repeat h-10 w-10" style={{ backgroundImage: `url(/img/logo_example.jpg)` }}>
-                                                        
-                                                    </div>
-                                                </td>
-                                                <td className="py-3 px-5">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 ell">
+                                                <td className="py-3 px-3 w-[100px]">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.number}>
                                                         {customer.number}
                                                     </Typography>
                                                 </td>
-                                                <td className="py-3 px-5">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 ell">
+                                                <td className="py-3 px-3 w-[120px]">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.name}>
                                                         {customer.name}
                                                     </Typography>
                                                 </td>
-                                                <td className="py-3 px-5">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                        {customer.branch_name}
+                                                <td className="py-3 px-3 w-[80px]">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.branch_name}>
+                                                        {customer.branch_name || '-'}
                                                     </Typography>
                                                 </td>
-                                                <td className="py-3 px-5">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                        {customer.company_name}
+                                                <td className="py-3 px-3 w-[150px]">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate" title={customer.company_name}>
+                                                        {customer.company_name || '-'}
                                                     </Typography>
                                                 </td>
-                                                <td className="py-3 px-5">
+                                                <td className="py-3 px-3 w-[70px]">
                                                     <Chip
                                                         variant="gradient"
                                                         color={customer.status ? "green" : "blue-gray"}
@@ -886,13 +903,13 @@ export function CustomerList() {
                                                         className="py-0.5 px-2 text-[11px] font-medium w-fit"
                                                     />
                                                 </td>
-                                                <td className="py-3 px-5">
-                                                    <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                        {customer.created_at}
+                                                <td className="py-3 px-3 w-[100px]">
+                                                    <Typography className="text-xs font-semibold text-blue-gray-600 truncate">
+                                                        {customer.created_at?.split(' ')[0] || '-'}
                                                     </Typography>
                                                 </td>
-                                                <td className="py-3 px-5">
-                                                    <div className="flex gap-2">
+                                                <td className="py-3 px-3 w-[120px]">
+                                                    <div className="flex gap-1 flex-nowrap">
                                                     {hasPermission('查看顧客') && (
                                                         <IconButton
                                                             variant="text"
@@ -926,7 +943,7 @@ export function CustomerList() {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="9" className="text-center py-4">
+                                            <td colSpan="7" className="text-center py-4">
                                                 <Typography>尚無資料</Typography>
                                             </td>
                                         </tr>
