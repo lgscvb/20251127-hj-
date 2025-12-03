@@ -135,8 +135,9 @@ export function Dashboard() {
     // 獲取當前分館名稱
     const getCurrentBranchName = () => {
         if (!user) return "未登入";
-        if (user.is_top_account) return "所有分館";
-        return user.branch || "未知分館";
+        // 確保 is_top_account 的判斷正確（可能是 1 或 true 或 "1"）
+        if (user.is_top_account == 1 || user.is_top_account === true) return "所有分館";
+        return user.branch || "未設定分館";
     };
 
     // 使用 API 返回的圖表數據
@@ -533,17 +534,17 @@ export function Dashboard() {
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                {PAYMENT_PLANS.find(t => t.value === project.payment_period)?.label}
+                                                    {project.businessItemName || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                {CONTRACT_TYPES.find(t => t.value === project.contractType)?.label}
+                                                    {PAYMENT_PLANS.find(t => t.value === project.payment_period)?.label || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
                                                 <Typography className="text-xs font-semibold text-blue-gray-600 ell">
-                                                    {project.contractType}
+                                                    {CONTRACT_TYPES.find(t => t.value === String(project.contractType))?.label || '-'}
                                                 </Typography>
                                             </td>
                                             <td className="py-3 px-5">
